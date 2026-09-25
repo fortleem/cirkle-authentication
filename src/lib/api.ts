@@ -70,6 +70,37 @@ export interface AuthorizeResponse {
   businessId: string | null
 }
 
+export interface BrainProviderResult {
+  id: string
+  name: string
+  model: string
+  color: string
+  ok: boolean
+  answer: string | null
+  error: string | null
+  latencyMs: number
+}
+
+export interface BrainProviderHealth {
+  id: string
+  name: string
+  model: string
+  color: string
+  ok: boolean
+  error: string | null
+  latencyMs: number
+}
+
+export interface BrainConsensus {
+  prompt: string
+  consensus: string
+  consensusModel: string | null
+  agreed: boolean
+  providers: BrainProviderResult[]
+  successCount: number
+  totalCount: number
+}
+
 export interface AuthorizeRequirementsMissing {
   error: string
   requirements: RequirementCheck[]
@@ -224,6 +255,20 @@ export const api = {
   },
   async completeKyc(): Promise<{ ok: boolean; kycVerified: boolean }> {
     const res = await fetch('/api/verification/kyc', { method: 'PATCH' })
+    return parseResponse(res)
+  },
+
+  // Circle Brain — AI consensus mesh
+  async askBrain(prompt: string): Promise<BrainConsensus> {
+    const res = await fetch('/api/ai/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    })
+    return parseResponse(res)
+  },
+  async brainHealth(): Promise<{ providers: BrainProviderHealth[] }> {
+    const res = await fetch('/api/ai/health', { cache: 'no-store' })
     return parseResponse(res)
   },
 }

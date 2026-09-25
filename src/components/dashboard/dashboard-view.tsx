@@ -13,6 +13,7 @@ import {
   BadgeCheck,
   UserCircle,
   Building2,
+  Brain,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -37,6 +38,7 @@ import { OverviewPanel } from './overview-panel'
 import { AppsPanel } from './apps-panel'
 import { IdentityPanel } from './identity-panel'
 import { BusinessPanel } from './business-panel'
+import { BrainPanel } from './brain-panel'
 import { SecurityPanel } from './security-panel'
 import { ActivityPanel } from './activity-panel'
 
@@ -45,6 +47,7 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'apps', label: 'Connected apps', icon: Plug, description: 'Manage app authorizations' },
   { key: 'identity', label: 'Identity', icon: UserCircle, description: 'Email, phone, KYC, 2FA' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
+  { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
   { key: 'security', label: 'Security', icon: ShieldCheck, description: 'Sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
@@ -282,6 +285,7 @@ export function DashboardView() {
               {dashboardTab === 'apps' && <AppsPanel />}
               {dashboardTab === 'identity' && <IdentityPanel />}
               {dashboardTab === 'business' && <BusinessPanel />}
+              {dashboardTab === 'brain' && <BrainPanel />}
               {dashboardTab === 'security' && <SecurityPanel />}
               {dashboardTab === 'activity' && <ActivityPanel />}
             </motion.div>

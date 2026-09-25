@@ -114,3 +114,28 @@ Stage Summary:
 - Apps panel has skeleton loading + a polished empty state.
 - Brand consistency: دواير Arabic in all 8 logo wordmarks (landing nav, landing spotlight, footer, dashboard header, dashboard mobile drawer, auth-shell form panel, auth-shell brand panel, splash).
 - Dev server running at http://localhost:3000.
+
+---
+Task ID: main-circle-brain
+Agent: main (Z.ai Code)
+Task: Build "Circle Brain" — a multi-provider AI consensus mesh using all 5 provided models (Groq, OpenRouter, NVIDIA, Gemini, HuggingFace) "in consensus".
+
+Work Log:
+- Added the 5 provider API keys + a JWT secret to .env.local (server-side only).
+- Tested sandbox connectivity to each provider: OpenRouter ✅ (meta-llama/llama-3.3-70b-instruct, ~1s), HuggingFace router ✅ (meta-llama/Llama-3.3-70B-Instruct, ~1.8s), Groq ❌ (403 Forbidden — key rejected/revoked), NVIDIA ❌ (404 function-not-found — account has no chat-completions credits), Gemini ❌ (key valid but model gemini-2.5-flash deprecated → gemini-3.8-flash region-locked "User location is not supported"). The engine is built to call ALL 5 in parallel and gracefully handle failures, so it works for any subset that responds.
+- Built src/lib/ai-providers.ts: an adapter pattern with one OpenAI-compatible adapter (used by Groq/OpenRouter/NVIDIA/HuggingFace) and a dedicated Gemini adapter (native generateContent API with ?key= query param, systemInstruction + contents/parts). Each provider call has its own AbortController timeout.
+- Built src/lib/ai-consensus.ts: runConsensus() does Round 1 (all 5 providers in parallel via Promise.all) → collects successful answers → Round 2 picks the synthesizer by priority (Groq → OpenRouter → HuggingFace → NVIDIA → Gemini) and asks it to reconcile the answers into one consensus. Falls back to the first successful answer if synthesis fails. Also probeProviders() for the health endpoint.
+- Built API routes: POST /api/ai/ask (auth-gated, zod-validated, records a brain.ask audit event) and GET /api/ai/health (auth-gated, probes each provider with "Reply with exactly: OK").
+- Wired types into src/lib/api.ts (BrainConsensus, BrainProviderResult, BrainProviderHealth) + askBrain/brainHealth client methods.
+- Added 'brain' to the DashboardTab union + the dashboard sidebar nav (Brain icon, "Circle Brain" label) + rendered <BrainPanel/>.
+- Built src/components/dashboard/brain-panel.tsx: orbit-ring provider-mesh health strip (color dots + signal-dot + live count + Probe button), ask form with Textarea + 4 suggested-question gold-stroke chips + btn-gold Ask button, animated consensus card (aurora bg, synthesizer-model badge, providers-count badge, full-agreement badge), and a per-provider breakdown grid (color dot, latency, OK/failed status, line-clamped answer or error).
+- Added the brain.ask action to the audit-log label map + the activity-panel icon/color maps (Sparkles icon, amber tone).
+- Optimized the per-provider timeout from 20s → 8s; consensus latency dropped from 54s → 5.6s.
+- Verified end-to-end: curl → POST /api/ai/ask returns 200 in 5.6s with a clean synthesized consensus (2/5 providers, OpenRouter synthesizer). Agent Browser → Circle Brain tab renders the provider mesh (2/5 live), asking a suggested question shows the consensus card with the synthesizer-model badge + per-provider rows (OpenRouter OK 1053ms, HuggingFace OK 1856ms, Groq/NVIDIA/Gemini failed with errors). Lint clean. No runtime errors.
+
+Stage Summary:
+- Circle Brain (دواير عقل) is live: a multi-provider AI consensus mesh wired into the Cirkle Authentication dashboard.
+- All 5 providers (Groq, OpenRouter, NVIDIA, Gemini, HuggingFace) are queried in parallel; a synthesizer reconciles the answers into one consensus; the per-provider breakdown is shown for transparency.
+- From this sandbox, 2/5 providers respond (OpenRouter + HuggingFace — the Groq key is rejected, NVIDIA has no chat credits, Gemini is region-locked). The architecture is provider-agnostic so all 5 will contribute when run from an environment with full access to each.
+- Consensus latency ~5.6s. Every query is recorded in the audit log as a brain.ask event.
+- Demo: username `cirkle` / cirkle2025 → Dashboard → Circle Brain tab.

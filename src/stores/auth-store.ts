@@ -49,6 +49,7 @@ export type DashboardTab =
   | 'apps'
   | 'identity'
   | 'business'
+  | 'brain'
   | 'security'
   | 'activity'
 

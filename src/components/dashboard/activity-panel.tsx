@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText } from 'lucide-react'
+import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText, Sparkles } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { api, type AuditEntry } from '@/lib/api'
@@ -23,6 +23,7 @@ const ACTION_ICONS: Record<string, typeof LogIn> = {
   'business.updated': Building2,
   'business.verified': BadgeCheck,
   'business.deleted': Building2,
+  'brain.ask': Sparkles,
 }
 
 const ACTION_COLORS: Record<string, string> = {
@@ -40,6 +41,7 @@ const ACTION_COLORS: Record<string, string> = {
   'business.updated': 'bg-muted text-muted-foreground',
   'business.verified': 'bg-primary/10 text-primary',
   'business.deleted': 'bg-destructive/10 text-destructive',
+  'brain.ask': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
 }
 
 export function ActivityPanel() {
