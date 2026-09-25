@@ -56,7 +56,7 @@ export default function Home() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
         <div className="relative">
           <div className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-primary/30 blur-2xl" />
-          <CirkleMark size={56} className="animate-spin-slow" />
+          <CirkleMark size={56} />
         </div>
         <p className="text-sm text-muted-foreground">Loading Cirkle identity…</p>
       </div>

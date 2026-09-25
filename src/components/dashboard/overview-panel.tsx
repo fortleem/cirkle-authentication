@@ -66,7 +66,7 @@ export function OverviewPanel() {
             <div className="relative">
               <div className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-primary/30 blur-xl" />
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                <CirkleMark size={28} className="invert" />
+                <CirkleMark size={28} />
               </div>
             </div>
             <div>
