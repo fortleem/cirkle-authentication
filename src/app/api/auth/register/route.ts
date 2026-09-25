@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { hashPassword, createSessionToken, getSessionExpiry } from '@/lib/auth'
 import { setSessionCookie, getClientIp, getUserAgent, recordAudit } from '@/lib/session'
+import { dispatchEvent, EVENTS } from '@/lib/inngest'
 
 const RegisterSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(60),
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
     const ua = getUserAgent(req)
     await recordAudit({ userId: user.id, action: 'user.registered', ip, userAgent: ua, metadata: { username: user.username } })
     await recordAudit({ userId: user.id, action: 'session.login', ip, userAgent: ua })
+    dispatchEvent(EVENTS.USER_REGISTERED, { userId: user.id, username: user.username, email: user.email })
 
     return NextResponse.json({
       user: {

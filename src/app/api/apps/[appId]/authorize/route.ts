@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { getCurrentUser, unauthorized, getClientIp, getUserAgent, recordAudit } from '@/lib/session'
 import { checkRequirements, type AppRequirements, type UserVerificationState } from '@/lib/requirements'
+import { dispatchEvent, EVENTS } from '@/lib/inngest'
 
 const AuthorizeSchema = z.object({
   scopes: z.string().optional(),
@@ -90,6 +91,7 @@ export async function POST(
     userAgent: ua,
     metadata: { appId, appSlug: app.slug, appName: app.name, scopes, contextType, businessId },
   })
+  dispatchEvent(EVENTS.APP_AUTHORIZED, { userId: user.id, appId, appName: app.name, appSlug: app.slug, contextType, businessId })
 
   return NextResponse.json({
     ok: true,

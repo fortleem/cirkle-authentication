@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { runConsensus } from '@/lib/ai-consensus'
 import { getCurrentUser, unauthorized, getClientIp, getUserAgent, recordAudit } from '@/lib/session'
+import { dispatchEvent, EVENTS } from '@/lib/inngest'
 
 const AskSchema = z.object({
   prompt: z.string().min(2, 'Please enter a question').max(2000, 'Question is too long (max 2000 chars)'),
@@ -32,6 +33,12 @@ export async function POST(req: NextRequest) {
         totalCount: result.totalCount,
         consensusModel: result.consensusModel,
       },
+    })
+    dispatchEvent(EVENTS.BRAIN_ASK, {
+      userId: user.id,
+      promptLength: parsed.data.prompt.length,
+      successCount: result.successCount,
+      consensusModel: result.consensusModel,
     })
     return NextResponse.json(result)
   } catch (e) {
