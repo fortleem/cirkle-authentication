@@ -112,10 +112,10 @@ export function SsoConsentModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!pending) close(); onOpenChange(v) }}>
-      <DialogContent className="max-w-md gap-0 overflow-hidden p-0">
+      <DialogContent className="orbit-ring max-w-md gap-0 overflow-hidden p-0">
         {/* Header */}
         <div className="relative border-b border-border/60 bg-gradient-to-br from-primary/8 to-card p-6">
-          <div className="cirkle-mesh absolute inset-0 -z-10 opacity-50" />
+          <div className="aurora-bg absolute inset-0 -z-10 opacity-60" />
           <DialogHeader className="space-y-0">
             <div className="mb-3 flex items-center gap-3">
               <CirkleMark size={28} />

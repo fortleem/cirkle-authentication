@@ -5,31 +5,39 @@ interface CirkleLogoProps {
   size?: number
   withWordmark?: boolean
   wordmarkClassName?: string
+  /** Show the Arabic دواير micro-subtitle under the wordmark */
+  withArabic?: boolean
 }
 
 /**
  * Cirkle mark — three Arabic-inspired interlocking cirkles rotating 360°,
  * stroked with the brand gradient (gold → rose → teal) and anchored by a
- * central gradient core. Mirrors src/components/brand/CircleMark.tsx from
- * the Cirkle design system.
+ * central gradient core. Mirrors src/components/brand/CircleMark.tsx.
  */
 export function CirkleLogo({
   className,
   size = 40,
   withWordmark = false,
   wordmarkClassName,
+  withArabic = false,
 }: CirkleLogoProps) {
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
       <CirkleMark size={size} />
       {withWordmark && (
         <div className={cn('flex flex-col leading-none', wordmarkClassName)}>
-          <span className="font-display font-medium tracking-tight text-foreground">
+          <span className="font-display text-gradient-hero font-medium tracking-tight">
             Cirkle
           </span>
-          <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Authentication
-          </span>
+          {withArabic ? (
+            <span className="mt-0.5 text-[9px] tracking-[0.4em] uppercase text-muted-foreground">
+              دواير
+            </span>
+          ) : (
+            <span className="mt-0.5 text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+              Authentication
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -43,7 +51,6 @@ export function CirkleMark({
   size?: number
   className?: string
 }) {
-  // gradient id kept unique per size so multiple marks don't clash
   const gid = `cirkle-brand-${size}`
   return (
     <svg

@@ -68,3 +68,25 @@ Stage Summary:
 - Theme: teal primary (#1A4A5A) in light on cream bg; gold primary (#C2A060) in dark on charcoal. Rose accent, steel secondary. Fraunces serif headings + Inter body. Radius 1.25rem. All brand gradients/shadows/glass utilities ported.
 - All prior functionality (dynamic per-platform auth, business+personal under one username, identity/verification panels) remains intact under the corrected brand.
 - Dev server running at http://localhost:3000.
+
+---
+Task ID: main-design-language
+Agent: main (Z.ai Code)
+Task: Implement the authentic Cirkle design language across the whole UI (orbit-ring cards, gold-stroke chips, signal-dots, aurora/arabesque backgrounds, gradient text, gold CTA buttons, Fraunces wordmark with دواير).
+
+Work Log:
+- Pulled the remaining design primitives from src/index.css + Splash.tsx in the cirkle-ac8fabe4 repo: gold-stroke chip, signal-dot, arabesque pattern, city-pulse, anon-veil, stage-frame, tip-coin, plus the Splash identity (aurora bg + large CirkleMark + gradient-text "Cirkle" + "دواير" Arabic subtitle).
+- Appended the auth-relevant primitives to globals.css: .gold-stroke (gradient-bordered chip), .signal-dot (animated mesh presence), .arabesque (gold radial pattern), .btn-gold / .btn-teal (gradient CTA buttons), plus the reduced-motion guards.
+- Upgraded CirkleLogo wordmark: "Cirkle" now uses font-display (Fraunces) + .text-gradient-hero, with a new withArabic prop showing the "دواير" micro-subtitle (matching the Splash identity).
+- Landing view: layered aurora-bg + arabesque + cirkle-grid backgrounds; hero badge → gold-stroke + signal-dot; hero CirkleMark scaled to 96 with gold drop-shadow; hero heading → text-gradient-hero; all primary CTAs → btn-gold gradient; feature cards, ecosystem cards, spotlight card, and final CTA card → orbit-ring; spotlight "Ready to integrate" → gold-stroke + signal-dot.
+- Dashboard overview: greeting card + 4 stat cards + security-score card + connected-apps preview + recommendations all → orbit-ring (signature gold-ring glass cards).
+- Apps panel: all 18 ecosystem app cards → orbit-ring.
+- SSO consent modal: DialogContent → orbit-ring; header bg → aurora-bg.
+- Auth shell brand panel: layered aurora-bg + arabesque + cirkle-grid; fixed a malformed mask-image class.
+- Agent Browser verified: landing has aurora-bg ✓, arabesque ✓, gold-stroke ✓, signal-dot ✓, 15 orbit-ring cards ✓, 4 btn-gold CTAs ✓, 3 gradient-text elements ✓, nav wordmark with دواير ✓. Dashboard: 6 orbit-ring cards, @cirkle + Cirkle Holdings context. Apps panel: 18 orbit-ring app cards. Theme toggle (light teal ↔ dark gold). Zero runtime errors. Lint clean.
+
+Stage Summary:
+- The authentic Cirkle design language is now implemented across the whole app — orbit-ring gold-ring cards, gold-stroke chips with signal-dots, aurora + arabesque + grid backgrounds, gradient-text hero/wordmark, gold gradient CTA buttons, Fraunces serif headings, دواير Arabic subtitle.
+- Visual identity matches the cirkle-ac8fabe4 repo's Splash + design-system primitives.
+- All functionality (dynamic per-platform auth, business+personal @username, identity/verification panels, SSO consent) remains intact under the authentic Cirkle look.
+- Dev server running at http://localhost:3000.

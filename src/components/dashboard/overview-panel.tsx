@@ -59,7 +59,7 @@ export function OverviewPanel() {
   return (
     <div className="space-y-6">
       {/* Greeting */}
-      <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/8 via-card to-card p-6">
+      <Card className="orbit-ring relative overflow-hidden p-6">
         <div className="cirkle-mesh absolute inset-0 -z-10 opacity-60" />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
@@ -123,7 +123,7 @@ export function OverviewPanel() {
       </div>
 
       {/* Security score */}
-      <Card className="p-6">
+      <Card className="orbit-ring p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2">
@@ -167,11 +167,11 @@ export function OverviewPanel() {
           </Button>
         </div>
         {loading ? (
-          <Card className="p-6 text-center">
+          <Card className="orbit-ring p-6 text-center">
             <Loader2 className="mx-auto h-5 w-5 animate-spin text-primary" />
           </Card>
         ) : connectedApps.length === 0 ? (
-          <Card className="p-6">
+          <Card className="orbit-ring p-6">
             <p className="text-sm text-muted-foreground">
               You haven't connected any apps yet. Authorize Cirkle-Search and other products to get started.
             </p>
@@ -256,7 +256,7 @@ function StatCard({
   return (
     <Card
       onClick={onClick}
-      className="group flex cursor-pointer flex-col gap-3 p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="orbit-ring group flex cursor-pointer flex-col gap-3 p-5 transition-all hover:-translate-y-0.5"
     >
       <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${accentMap[accent]}`}>
         <Icon className="h-4 w-4" />

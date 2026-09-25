@@ -299,9 +299,91 @@
   animation: cirkle-pulse-ring 3s ease-in-out infinite;
 }
 
+/* Gold-stroke — fine gradient-bordered chip/tag (Cirkle's signature tag) */
+.gold-stroke {
+  position: relative;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: hsl(var(--card) / 0.5);
+  color: hsl(var(--foreground));
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.gold-stroke::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, hsl(var(--gold) / 0.7), hsl(var(--secondary) / 0.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Signal-dot — animated mesh presence indicator */
+.signal-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: hsl(var(--secondary));
+  box-shadow: 0 0 0 2px hsl(var(--background));
+}
+.signal-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 1.2px solid hsl(var(--secondary) / 0.6);
+  animation: signalPulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.signal-dot[data-state="off"] { background: hsl(var(--muted-foreground) / 0.5); }
+.signal-dot[data-state="off"]::after { display: none; }
+@keyframes signalPulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Arabesque — subtle gold radial pattern background */
+.arabesque {
+  background-image:
+    radial-gradient(circle at 0 50%, hsl(var(--gold) / 0.08) 0, transparent 12%),
+    radial-gradient(circle at 100% 50%, hsl(var(--gold) / 0.08) 0, transparent 12%),
+    radial-gradient(circle at 50% 0, hsl(var(--gold) / 0.08) 0, transparent 12%),
+    radial-gradient(circle at 50% 100%, hsl(var(--gold) / 0.08) 0, transparent 12%);
+  background-size: 40px 40px;
+}
+
+/* Gradient buttons — Cirkle signature CTAs */
+.btn-gold {
+  background: linear-gradient(135deg, hsl(39 45% 67%) 0%, hsl(39 45% 47%) 100%);
+  color: hsl(60 8% 9%);
+  box-shadow: 0 4px 18px hsl(39 45% 57% / 0.35), inset 0 1px 0 hsl(0 0% 100% / 0.3);
+}
+.btn-gold:hover {
+  background: linear-gradient(135deg, hsl(39 50% 72%) 0%, hsl(39 50% 52%) 100%);
+  box-shadow: 0 6px 24px hsl(39 45% 57% / 0.45), inset 0 1px 0 hsl(0 0% 100% / 0.35);
+}
+.btn-teal {
+  background: linear-gradient(135deg, hsl(195 56% 28%) 0%, hsl(195 56% 18%) 100%);
+  color: hsl(40 50% 98%);
+  box-shadow: 0 4px 18px hsl(195 56% 23% / 0.3), inset 0 1px 0 hsl(0 0% 100% / 0.18);
+}
+.dark .btn-teal {
+  background: linear-gradient(135deg, hsl(39 45% 62%) 0%, hsl(39 45% 47%) 100%);
+  color: hsl(60 8% 9%);
+  box-shadow: 0 4px 18px hsl(39 45% 57% / 0.4), inset 0 1px 0 hsl(0 0% 100% / 0.3);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cirkle-spin-trefoil,
-  .animate-pulse-ring {
+  .animate-pulse-ring,
+  .signal-dot::after {
     animation: none;
   }
 }

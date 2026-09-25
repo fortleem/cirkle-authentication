@@ -152,8 +152,8 @@ export function AppsPanel() {
             return (
               <Card
                 key={app.id}
-                className={`flex h-full flex-col p-5 transition-all hover:shadow-md ${
-                  app.authorized ? 'border-primary/30' : ''
+                className={`orbit-ring flex h-full flex-col p-5 transition-all hover:-translate-y-0.5 ${
+                  app.authorized ? '' : ''
                 }`}
               >
                 <div className="flex items-start gap-3">

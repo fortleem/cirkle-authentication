@@ -91,18 +91,19 @@ export function LandingView() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Decorative background */}
-      <div className="cirkle-mesh absolute inset-0 -z-10" />
+      {/* Cirkle signature backgrounds */}
+      <div className="aurora-bg absolute inset-0 -z-10 opacity-70" />
       <div className="cirkle-grid absolute inset-0 -z-10 opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
+      <div className="arabesque absolute inset-0 -z-10 opacity-50 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
 
       {/* Nav */}
       <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/50">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-          <CirkleLogo size={36} withWordmark />
+          <CirkleLogo size={36} withWordmark withArabic />
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {user ? (
-              <Button size="sm" onClick={() => setView('dashboard')} className="gap-1.5">
+              <Button size="sm" onClick={() => setView('dashboard')} className="btn-gold gap-1.5 border-0">
                 Dashboard <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
@@ -110,7 +111,7 @@ export function LandingView() {
                 <Button variant="ghost" size="sm" onClick={() => setView('login')}>
                   Sign in
                 </Button>
-                <Button size="sm" onClick={() => setView('register')} className="gap-1.5">
+                <Button size="sm" onClick={() => setView('register')} className="btn-gold gap-1.5 border-0">
                   Get started <ArrowRight className="h-4 w-4" />
                 </Button>
               </>
@@ -128,13 +129,10 @@ export function LandingView() {
             transition={{ duration: 0.5 }}
             className="mb-5 inline-flex"
           >
-            <Badge variant="outline" className="gap-1.5 rounded-full border-primary/30 bg-primary/5 px-3 py-1 text-primary">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-              </span>
+            <span className="gold-stroke">
+              <span className="signal-dot" />
               Unified identity for the Cirkle ecosystem
-            </Badge>
+            </span>
           </motion.div>
 
           <motion.div
@@ -145,7 +143,7 @@ export function LandingView() {
           >
             <div className="relative">
               <div className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-primary/20 blur-2xl" />
-              <CirkleMark size={88} className="drop-shadow-[0_8px_30px_oklch(0.72_0.15_75_/_0.4)]" />
+              <CirkleMark size={96} className="drop-shadow-[0_8px_40px_hsl(39_45%_57%_/_0.4)]" />
             </div>
           </motion.div>
 
@@ -155,7 +153,7 @@ export function LandingView() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-6xl"
           >
-            One identity. <span className="text-gold-gradient">Every Cirkle app.</span>
+            One identity. <span className="text-gradient-hero">Every Cirkle app.</span>
           </motion.h1>
 
           <motion.p
@@ -177,7 +175,7 @@ export function LandingView() {
             transition={{ duration: 0.5, delay: 0.26 }}
             className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
-            <Button size="lg" onClick={() => setView('register')} className="w-full gap-2 sm:w-auto">
+            <Button size="lg" onClick={() => setView('register')} className="btn-gold w-full gap-2 border-0 sm:w-auto">
               Create your Cirkle identity
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -213,7 +211,7 @@ export function LandingView() {
       {/* Cirkle-Search spotlight */}
       {cirkleSearch && (
         <section className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
-          <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-6 sm:p-10 brand-glow">
+          <Card className="orbit-ring relative overflow-hidden p-6 sm:p-10">
             <div className="cirkle-mesh absolute inset-0 -z-10 opacity-60" />
             <div className="grid items-center gap-8 lg:grid-cols-2">
               <div>
@@ -242,7 +240,7 @@ export function LandingView() {
                   ))}
                 </ul>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Button onClick={() => setView('register')} className="gap-1.5">
+                  <Button onClick={() => setView('register')} className="btn-gold gap-1.5 border-0">
                     Get your Cirkle identity <ArrowRight className="h-4 w-4" />
                   </Button>
                   <Button variant="outline" asChild>
@@ -253,7 +251,7 @@ export function LandingView() {
                 </div>
               </div>
               <div className="relative">
-                <div className="flex items-center gap-4 rounded-2xl border border-border/60 bg-background/60 p-6 backdrop-blur">
+                <div className="flex items-center gap-4 orbit-ring p-6">
                   <div
                     className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-white"
                     style={{ backgroundColor: cirkleSearch.color }}
@@ -266,8 +264,8 @@ export function LandingView() {
                   <div>
                     <div className="text-lg font-semibold">{cirkleSearch.name}</div>
                     <p className="mt-1 text-sm text-muted-foreground">{cirkleSearch.description}</p>
-                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Ready to integrate
+                    <div className="mt-2 gold-stroke">
+                      <span className="signal-dot" /> Ready to integrate
                     </div>
                   </div>
                 </div>
@@ -305,7 +303,7 @@ export function LandingView() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
               >
-                <Card className="group h-full p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/5">
+                <Card className="orbit-ring group h-full p-5 transition-all hover:-translate-y-0.5">
                   <div className="flex items-start gap-4">
                     <div
                       className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
@@ -354,7 +352,7 @@ export function LandingView() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.04 }}
             >
-              <Card className="h-full p-6">
+              <Card className="orbit-ring h-full p-6">
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <f.icon className="h-5 w-5" />
                 </div>
@@ -386,7 +384,7 @@ export function LandingView() {
 
       {/* CTA */}
       <section className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6">
-        <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-8 text-center sm:p-14">
+        <Card className="orbit-ring relative overflow-hidden p-8 text-center sm:p-14">
           <div className="cirkle-mesh absolute inset-0 -z-10 opacity-70" />
           <CirkleMark size={56} className="mx-auto mb-5" />
           <h2 className="mx-auto max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -397,7 +395,7 @@ export function LandingView() {
             with a single, secure sign-on.
           </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" onClick={() => setView('register')} className="w-full gap-2 sm:w-auto">
+            <Button size="lg" onClick={() => setView('register')} className="btn-gold w-full gap-2 border-0 sm:w-auto">
               Create your Cirkle identity <ArrowRight className="h-4 w-4" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => setView('login')} className="w-full sm:w-auto">

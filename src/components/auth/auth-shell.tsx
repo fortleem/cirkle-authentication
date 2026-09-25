@@ -32,7 +32,8 @@ export function AuthShell({
     <div className="relative min-h-screen lg:grid lg:grid-cols-2">
       {/* Left brand panel */}
       <div className="relative hidden overflow-hidden bg-gradient-to-br from-primary/15 via-background to-background lg:flex lg:flex-col lg:justify-between lg:p-10">
-        <div className="cirkle-mesh absolute inset-0 -z-10" />
+        <div className="aurora-bg absolute inset-0 -z-10 opacity-80" />
+        <div className="arabesque absolute inset-0 -z-10 opacity-60" />
         <div className="cirkle-grid absolute inset-0 -z-10 opacity-30 [mask-image:radial-gradient(ellipse_at_top_left,black,transparent_70%)]" />
         <button
           onClick={() => setView('landing')}
