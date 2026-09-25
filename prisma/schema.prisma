@@ -1,0 +1,89 @@
+// Cirkle Authentication - Central SSO Identity Provider
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  name             String
+  passwordHash     String
+  avatarUrl        String?
+  twoFactorEnabled Boolean        @default(false)
+  twoFactorSecret  String?
+  emailVerified    Boolean        @default(true)
+  role             String         @default("member")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  lastLoginAt      DateTime?
+  sessions         Session[]
+  appAccess        UserAppAccess[]
+  auditLogs        AuditLog[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  ip         String?
+  userAgent  String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ConnectedApp {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  name        String
+  description String
+  category    String
+  color       String
+  icon        String
+  homepage   String
+  redirectUrl String?
+  featured    Boolean          @default(false)
+  status      String           @default("active")
+  createdAt   DateTime         @default(now())
+  userAccess  UserAppAccess[]
+
+  @@index([slug])
+}
+
+model UserAppAccess {
+  id        String   @id @default(cuid())
+  userId    String
+  appId     String
+  scopes    String   @default("openid profile email")
+  grantedAt DateTime @default(now())
+  lastUsedAt DateTime?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  app       ConnectedApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, appId])
+  @@index([userId])
+  @@index([appId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  ip         String?
+  userAgent  String?
+  metadata   String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
