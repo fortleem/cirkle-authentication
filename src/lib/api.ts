@@ -79,6 +79,7 @@ export interface BrainProviderResult {
   answer: string | null
   error: string | null
   latencyMs: number
+  triedModels?: string[]
 }
 
 export interface BrainProviderHealth {
@@ -89,6 +90,7 @@ export interface BrainProviderHealth {
   ok: boolean
   error: string | null
   latencyMs: number
+  triedModels?: string[]
 }
 
 export interface BrainConsensus {

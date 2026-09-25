@@ -139,3 +139,33 @@ Stage Summary:
 - From this sandbox, 2/5 providers respond (OpenRouter + HuggingFace — the Groq key is rejected, NVIDIA has no chat credits, Gemini is region-locked). The architecture is provider-agnostic so all 5 will contribute when run from an environment with full access to each.
 - Consensus latency ~5.6s. Every query is recorded in the audit log as a brain.ask event.
 - Demo: username `cirkle` / cirkle2025 → Dashboard → Circle Brain tab.
+
+---
+Task ID: main-model-fallback
+Agent: main (Z.ai Code)
+Task: When a model is out of credit / unavailable, check all the provider's other models and switch to a working one.
+
+Work Log:
+- Rewrote src/lib/ai-providers.ts with automatic model fallback per provider:
+  • Each provider now has a `models: string[]` priority list (5–6 models each) instead of a single model.
+  • A module-level `workingModel: Record<string, string>` cache stores the first model that succeeds, so subsequent calls skip straight to it.
+  • call() tries candidates in order: cached working model first, then the priority list. On each model: if it returns a MODEL-level error (404 model-not-found, 400 bad/deprecated model, 429 rate-limit, 402 out-of-credit, or body containing credit/quota/limit/deprecated/"no longer available"), it tries the next model. On a NON-model error (401/403 key-level, region-locked "User location is not supported", NVIDIA "Function not found for account", network errors) it stops immediately (other models would fail the same way).
+  • If all hardcoded models fail, it dynamically discovers the provider's full catalog via its /models endpoint (OpenAI-compatible for Groq/OpenRouter/NVIDIA/HuggingFace; native /v1beta/models filtered to generateContent for Gemini) and tries each discovered model until one works.
+  • isModelError() precisely distinguishes model errors (retry) from account/region errors (stop).
+  • Each ProviderResult now includes `triedModels: string[]` so the UI can show how many models were attempted.
+- Per-provider priority lists:
+  • Groq: llama-3.3-70b-versatile → llama-3.1-8b-instant → gemma2-9b-it → deepseek-r1-distill-llama-70b → mixtral-8x7b-32768
+  • OpenRouter: meta-llama/llama-3.3-70b-instruct → :free → meta-llama/llama-3.1-70b-instruct → llama-3.1-8b-instruct:free → mistralai/mistral-7b-instruct:free → google/gemini-2.0-flash-exp:free
+  • NVIDIA: mistralai/mistral-7b-instruct-v0.3 → meta/llama-3.3-70b-instruct → meta/llama-3.1-70b-instruct → google/gemma-3-12b-it → microsoft/phi-3.5-moe-instruct → z-ai/glm-5.3-flash
+  • Gemini: gemini-3.8-flash → gemini-2.5-flash → gemini-2.0-flash → gemini-1.5-flash → gemini-1.5-flash-latest
+  • HuggingFace: meta-llama/Llama-3.3-70B-Instruct → Meta-Llama-3.1-70B-Instruct → Meta-Llama-3-70B-Instruct → Mistral-7B-Instruct-v0.3 → HuggingFaceH4/zephyr-7b-beta
+- Surfaced triedModels through the API: BrainProviderResult + BrainProviderHealth types now include `triedModels?: string[]`; /api/ai/health returns it per provider.
+- Brain panel UI: each per-provider card now shows a "⟳ N tried" amber badge when triedModels.length > 1, with a tooltip listing the models tried in order, plus the resolved working model name.
+- Verified the fallback end-to-end: temporarily injected a bogus first model for OpenRouter → POST /api/ai/ask returned OpenRouter ok=True with triedModels=['bogus/nonexistent-model-test', 'meta-llama/llama-3.3-70b-instruct'] — the engine detected the model-level failure, switched to the working model, and produced a clean consensus. Then reverted to the production-optimal priority order.
+- Production config re-verified: 2/5 providers respond (OpenRouter + HuggingFace, first-model success so no fallback needed); Groq/NVIDIA/Gemini fail at key/account/region level (correctly stop without retrying, since switching models can't fix those). Lint clean.
+
+Stage Summary:
+- Circle Brain now automatically switches models when one is out of credit / deprecated / rate-limited: each provider has a priority list + dynamic discovery, with a smart isModelError() that distinguishes retry-worthy model errors from account/region errors (so it doesn't waste time trying models that can't possibly work).
+- The fallback is verified to switch to a working model and is visible in the UI via the "⟳ N tried" badge + resolved-model name.
+- Tried-models info flows through /api/ai/ask and /api/ai/health.
+- Dev server running at http://localhost:3000.

@@ -16,6 +16,7 @@ export async function GET() {
       ok: r.ok,
       error: r.error,
       latencyMs: r.latencyMs,
+      triedModels: r.triedModels ?? [],
     })),
   })
 }

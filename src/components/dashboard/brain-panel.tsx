@@ -235,7 +235,12 @@ export function BrainPanel() {
                           <XCircle className="h-2.5 w-2.5" /> failed
                         </Badge>
                       )}
-                      <span className="ml-auto truncate text-[10px] text-muted-foreground">{p.model}</span>
+                      {(p.triedModels?.length ?? 0) > 1 && (
+                        <Badge variant="outline" className="gap-1 border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400" title={`Tried: ${(p.triedModels ?? []).join(' → ')}`}>
+                          <RefreshCw className="h-2.5 w-2.5" /> {p.triedModels!.length} tried
+                        </Badge>
+                      )}
+                      <span className="ml-auto max-w-[40%] truncate text-[10px] text-muted-foreground" title={p.model}>{p.model}</span>
                     </div>
                     {p.ok ? (
                       <p className="line-clamp-6 text-xs text-muted-foreground">{p.answer}</p>
