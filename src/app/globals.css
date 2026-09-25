@@ -11,7 +11,7 @@
   --color-foreground: hsl(var(--foreground));
   --font-sans: var(--font-inter), 'SF Pro Display', system-ui, sans-serif;
   --font-display: var(--font-fraunces), 'Cormorant Garamond', Georgia, serif;
-  --font-arabic: 'Tajawal', 'Cairo', sans-serif;
+  --font-arabic: var(--font-tajawal), 'Tajawal', 'Cairo', sans-serif;
   --color-sidebar-ring: hsl(var(--sidebar-ring));
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));

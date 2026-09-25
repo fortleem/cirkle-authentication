@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Loader2,
   Search,
   CheckCircle2,
   ExternalLink,
@@ -138,12 +137,40 @@ export function AppsPanel() {
 
       {/* Apps grid */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <Card key={i} className="orbit-ring flex h-full flex-col p-5">
+              <div className="flex items-start gap-3">
+                <div className="h-11 w-11 shrink-0 animate-pulse rounded-xl bg-muted" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                  <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+                </div>
+              </div>
+              <div className="mt-3 space-y-1.5">
+                <div className="h-3 w-full animate-pulse rounded bg-muted" />
+                <div className="h-3 w-5/6 animate-pulse rounded bg-muted" />
+              </div>
+              <div className="mt-3 flex gap-1.5">
+                <div className="h-4 w-14 animate-pulse rounded-full bg-muted" />
+                <div className="h-4 w-10 animate-pulse rounded-full bg-muted" />
+              </div>
+              <div className="mt-4 h-8 w-full animate-pulse rounded-lg bg-muted" />
+            </Card>
+          ))}
         </div>
       ) : filtered.length === 0 ? (
-        <Card className="p-10 text-center">
-          <p className="text-sm text-muted-foreground">No apps match your filters.</p>
+        <Card className="orbit-ring flex flex-col items-center gap-3 p-12 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <Search className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-display font-semibold">No apps match your filters</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Try a different search term or filter.</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => { setQuery(''); setFilter('all') }}>
+            Clear filters
+          </Button>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

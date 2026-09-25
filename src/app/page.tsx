@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useAuthStore } from '@/stores/auth-store'
 import { api } from '@/lib/api'
 import { LandingView } from '@/components/landing/landing-view'
@@ -53,12 +54,33 @@ export default function Home() {
 
   if (!hydrated) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <div className="relative">
-          <div className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-primary/30 blur-2xl" />
-          <CirkleMark size={56} />
-        </div>
-        <p className="text-sm text-muted-foreground">Loading Cirkle identity…</p>
+      <div className="relative flex min-h-screen flex-col items-center justify-center gap-6 overflow-hidden bg-background">
+        <div className="aurora-bg absolute inset-0 opacity-70" />
+        <div className="arabesque absolute inset-0 opacity-50 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0, filter: 'blur(20px)' }}
+          animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="relative"
+        >
+          <CirkleMark size={120} className="drop-shadow-[0_8px_50px_hsl(39_45%_57%_/_0.4)]" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="relative mt-2 text-center"
+        >
+          <div className="font-display text-4xl font-medium text-gradient-hero">Cirkle</div>
+          <div
+            dir="rtl"
+            lang="ar"
+            className="mt-1.5 text-[11px] tracking-[0.4em] text-muted-foreground"
+            style={{ fontFamily: 'var(--font-tajawal), Tajawal, sans-serif' }}
+          >
+            دواير
+          </div>
+        </motion.div>
       </div>
     )
   }

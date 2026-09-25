@@ -90,3 +90,27 @@ Stage Summary:
 - Visual identity matches the cirkle-ac8fabe4 repo's Splash + design-system primitives.
 - All functionality (dynamic per-platform auth, business+personal @username, identity/verification panels, SSO consent) remains intact under the authentic Cirkle look.
 - Dev server running at http://localhost:3000.
+
+---
+Task ID: main-arabic-fix-and-build
+Agent: main (Z.ai Code)
+Task: Fix the Arabic language (دواير) display + proceed building/improving.
+
+Work Log:
+- Took a screenshot + inspected the دواير element: it was rendering with Inter font (not Tajawal), direction LTR, letter-spacing 3.6px + uppercase (which break Arabic cursive joins), and Tajawal was never loaded.
+- Root cause: the layout only loaded Inter + Fraunces via next/font; the CSS --font-arabic var pointed at 'Tajawal' but no @font-face was injected, and the Arabic span inherited Inter with breaking letter-spacing.
+- Fix: added Tajawal via next/font/google (arabic+latin subsets, weights 300/400/500/700) to layout.tsx; wired --font-tajawal onto <body>. Updated globals.css --font-arabic to reference var(--font-tajawal). Rewrote the CirkleLogo Arabic span: dir="rtl" lang="ar", fontFamily var(--font-tajawal), letterSpacing 0 (removed the breaking tracking), removed uppercase.
+- Verified via Agent Browser: the Arabic element now computes fontFamily "Tajawal, Tajawal Fallback...", direction rtl, lang ar, letterSpacing normal, hasTajawalLoaded true.
+- Proceeded building/improving:
+  • Upgraded the page.tsx loading splash to the authentic Cirkle Splash (aurora-bg + arabesque bg + framer-motion blur-in CirkleMark at 120px + gradient-text "Cirkle" + دواير Arabic, matching the repo's Splash.tsx).
+  • Upgraded the auth-shell brand panel: large CirkleMark with gold drop-shadow + gradient "Cirkle" wordmark + دواير Arabic above the headline; brand-points list now uses orbit-ring cards.
+  • Added withArabic to all remaining nav logos (dashboard header, dashboard mobile drawer, auth-shell form panel) for brand consistency — 8 total Arabic instances.
+  • Replaced the apps-panel bare spinner with 6 skeleton orbit-ring cards (shimmer placeholders) + improved the empty state into an orbit-ring card with an icon, heading, and a "Clear filters" button.
+- Agent Browser verified end-to-end: landing shows دواير in nav (Tajawal, rtl), login flow works, dashboard shows دواير in nav + @cirkle + Cirkle Holdings, apps panel renders 18 orbit-ring cards, empty state ("No apps match your filters" + Clear filters) renders, session cookie persists across reload. Zero runtime errors. Lint clean.
+
+Stage Summary:
+- Arabic (دواير) is now correctly rendered everywhere with the Tajawal Arabic font, RTL direction, and no breaking letter-spacing.
+- Authentic Cirkle Splash on load (aurora + rotating mark + gradient wordmark + Arabic).
+- Apps panel has skeleton loading + a polished empty state.
+- Brand consistency: دواير Arabic in all 8 logo wordmarks (landing nav, landing spotlight, footer, dashboard header, dashboard mobile drawer, auth-shell form panel, auth-shell brand panel, splash).
+- Dev server running at http://localhost:3000.

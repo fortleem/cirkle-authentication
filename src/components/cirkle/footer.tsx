@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="mt-auto border-t border-border/60 bg-background/40 backdrop-blur supports-[backdrop-filter]:bg-background/30">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-3">
-          <CirkleLogo size={26} withWordmark wordmarkClassName="text-xs" />
+          <CirkleLogo size={26} withWordmark withArabic wordmarkClassName="text-xs" />
           <span className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Cirkle. One identity for the whole ecosystem.
           </span>

@@ -114,7 +114,7 @@ export function DashboardView() {
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <button onClick={() => setView('landing')}>
-              <CirkleLogo size={32} withWordmark />
+              <CirkleLogo size={32} withWordmark withArabic />
             </button>
             <Badge variant="outline" className="hidden gap-1.5 border-primary/30 bg-primary/5 text-primary sm:inline-flex">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" /> SSO Dashboard
@@ -238,7 +238,7 @@ export function DashboardView() {
                 className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-r border-border bg-background p-4 lg:hidden"
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <CirkleLogo size={28} withWordmark />
+                  <CirkleLogo size={28} withWordmark withArabic />
                   <Button variant="ghost" size="icon" onClick={() => setMobileNav(false)} aria-label="Close navigation">
                     <X className="h-5 w-5" />
                   </Button>

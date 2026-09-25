@@ -30,7 +30,12 @@ export function CirkleLogo({
             Cirkle
           </span>
           {withArabic ? (
-            <span className="mt-0.5 text-[9px] tracking-[0.4em] uppercase text-muted-foreground">
+            <span
+              dir="rtl"
+              lang="ar"
+              className="mt-0.5 text-[10px] text-muted-foreground"
+              style={{ fontFamily: 'var(--font-tajawal), Tajawal, sans-serif', letterSpacing: 0 }}
+            >
               دواير
             </span>
           ) : (
