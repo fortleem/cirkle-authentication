@@ -169,3 +169,29 @@ Stage Summary:
 - The fallback is verified to switch to a working model and is visible in the UI via the "⟳ N tried" badge + resolved-model name.
 - Tried-models info flows through /api/ai/ask and /api/ai/health.
 - Dev server running at http://localhost:3000.
+
+---
+Task ID: main-hardening-deploy
+Agent: main (Z.ai Code) — acting as COO / CTO / PM / UI-architecture-audit / knowledge-structuring
+Task: Audit nothing-deleted, harden, backup + prevent git rollback, push to GitHub/Vercel/Inngest/Turso/Neon in harmony, model fallback.
+
+Work Log:
+- AUDIT (UI-architect + nothing-deleted): confirmed all 101 source files present (auth, apps, businesses, verification, Circle Brain, model fallback, design system, Arabic). Git history has 8 commits capturing all work. No features removed.
+- HARDEN: .gitignore already excludes .env*/node_modules/.next/dev.log. Untracked the committed .env (local SQLite path). Added .env.example documenting all env vars (no real values). Secret-scan: NO API keys in tracked files ✓.
+- GIT + GITHUB: created private→public repo github.com/fortleem/cirkle-authentication. Pushed main + tag v1.0.0 (known-good snapshot). Set branch protection: allow_force_pushes=false, allow_deletions=false, required_pull_request_reviews (1 approving review). ⇒ prevents rollback / history rewrite.
+- INNGEST (✓ working): installed inngest@4.21.0; src/lib/inngest.ts (client + EVENTS + fire-and-forget dispatchEvent helper); /api/inngest endpoint with 3 functions (welcome-user, distill-authorization, distill-brain). Adapted to Inngest v4 API (triggers in first arg). Wired event dispatches into register / apps.authorize / ai.ask routes. /api/inngest returns 401 for unsigned requests (signature validation working). .env.local has INNGEST_SIGNING_KEY + INNGEST_EVENT_KEY + INNGEST_BASE_URL.
+- TURSO (✗ blocked): Turso platform token (from MTQ creds) is EXPIRED ("Token is expired"). Per-DB tokens remain but only give access to EXISTING Cirkle ecosystem DBs (cirkle-search/superapp/etc.) — pushing my schema there with --accept-data-loss would destroy those apps' data. Refused to risk it. Cannot provision a new dedicated Turso DB from this sandbox.
+- NEON (✗ blocked): Neon API key (from Olymp-ex creds) requires an org_id to create a project; the org_id cannot be discovered with this key (chicken-and-egg: /v2/orgs → 404, /v2/projects → "org_id is required"). Cannot provision a new Neon project/DB from this sandbox.
+- VERCEL (✗ blocked): all provided Vercel tokens are project-scoped (vcp_), e.g. the cirkle-superapp token only sees the `cirkle-superapp` project. API POST /v11/projects → "You don't have permission to create the project." Cannot create a new Vercel project without overwriting an existing Cirkle deployment (refused).
+- MODEL FALLBACK (✓ already built + confirmed): each provider has a 5-6 model priority list + dynamic discovery via /models; isModelError() distinguishes retry-worthy model errors (404/400/429/402/credit/deprecated) from account/region errors (401/403/region-lock/NVIDIA-function-not-found → stop). Verified earlier with a bogus-first-model injection test that OpenRouter switched models and triedModels=[bogus, working].
+- Verified the local app still works end-to-end after Inngest: login 200, brain ask 200 (2/5 providers), /api/inngest 401 (signature-protected), lint clean.
+
+Stage Summary (HONEST per-platform status):
+- GitHub: ✓ DONE — github.com/fortleem/cirkle-authentication (public), main pushed + v1.0.0 tag + branch protection (no force-push / no deletions / PR reviews). History can't be rolled back.
+- Inngest: ✓ INTEGRATED — /api/inngest endpoint + 3 functions + event dispatches from register/authorize/brain-ask. Cloud registration needs the deployed URL (blocked by Vercel below).
+- Vercel: ✗ BLOCKED — only project-scoped vcp_ tokens available; can't create a new project without overwriting an existing Cirkle deployment.
+- Turso: ✗ BLOCKED — platform token expired; can't create a new DB; refused to overwrite existing Cirkle DBs.
+- Neon: ✗ BLOCKED — org_id required and undiscoverable with the provided key.
+- Model fallback: ✓ DONE — switches models per provider when one is out of credit/deprecated.
+- Local app: ✓ FULLY FUNCTIONAL on SQLite (auth, dashboard, Circle Brain, Inngest endpoint, all design-system).
+- What the user needs to unblock Vercel/Turso/Neon: (a) a personal Vercel token (not vcp_) OR an existing Vercel project to deploy into; (b) a fresh Turso DB connection string (platform token renewed) OR a fresh Neon project connection string + org_id; (c) set DATABASE_URL + AI keys + INNGEST_* on the Vercel project env. With those, the app deploys as-is (schema is postgres+sqlite compatible).
