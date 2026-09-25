@@ -5,7 +5,8 @@ import { verifyPassword, createSessionToken, getSessionExpiry } from '@/lib/auth
 import { setSessionCookie, getClientIp, getUserAgent, recordAudit } from '@/lib/session'
 
 const LoginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  // Accept either a username or an email as the single handle
+  identifier: z.string().min(1, 'Enter your username or email'),
   password: z.string().min(1, 'Password is required'),
 })
 
@@ -17,17 +18,20 @@ export async function POST(req: NextRequest) {
       const firstError = parsed.error.issues[0]?.message ?? 'Invalid input'
       return NextResponse.json({ error: firstError }, { status: 400 })
     }
-    const { email, password } = parsed.data
-    const normalizedEmail = email.toLowerCase().trim()
+    const { identifier, password } = parsed.data
+    const normalized = identifier.toLowerCase().trim()
+    const isEmail = normalized.includes('@')
 
-    const user = await db.user.findUnique({ where: { email: normalizedEmail } })
+    const user = await db.user.findFirst({
+      where: isEmail ? { email: normalized } : { username: normalized },
+    })
     if (!user) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
+      return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
     }
 
     const valid = await verifyPassword(password, user.passwordHash)
     if (!valid) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
+      return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
     }
 
     const token = createSessionToken({ userId: user.id, email: user.email, name: user.name, role: user.role })
@@ -46,16 +50,21 @@ export async function POST(req: NextRequest) {
 
     const ip = getClientIp(req)
     const ua = getUserAgent(req)
-    await recordAudit({ userId: user.id, action: 'session.login', ip, userAgent: ua })
+    await recordAudit({ userId: user.id, action: 'session.login', ip, userAgent: ua, metadata: { via: isEmail ? 'email' : 'username' } })
 
     return NextResponse.json({
       user: {
         id: user.id,
+        username: user.username,
         email: user.email,
         name: user.name,
         role: user.role,
         twoFactorEnabled: user.twoFactorEnabled,
         emailVerified: user.emailVerified,
+        phoneVerified: user.phoneVerified,
+        kycVerified: user.kycVerified,
+        businessVerified: user.businessVerified,
+        phone: user.phone,
         avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
         lastLoginAt: new Date(),

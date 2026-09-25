@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react'
+import { Loader2, AtSign, Lock, ArrowRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -15,31 +14,35 @@ export function LoginView() {
   const setUser = useAuthStore((s) => s.setUser)
   const setView = useAuthStore((s) => s.setView)
   const setStats = useAuthStore((s) => s.setStats)
-  const router = useRouter()
+  const setBusinesses = useAuthStore((s) => s.setBusinesses)
+  const setActiveBusinessId = useAuthStore((s) => s.setActiveBusinessId)
 
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [pending, setPending] = useState(false)
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
+  const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({})
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     const next: typeof errors = {}
-    if (!email.trim()) next.email = 'Email is required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Enter a valid email'
+    if (!identifier.trim()) next.identifier = 'Enter your username or email'
     if (!password) next.password = 'Password is required'
     setErrors(next)
     if (Object.keys(next).length) return
 
     setPending(true)
     try {
-      const { user } = await api.login({ email: email.trim(), password })
+      const { user } = await api.login({ identifier: identifier.trim(), password })
       setUser(user)
       toast.success(`Welcome back, ${user.name.split(' ')[0]}!`)
-      // Refresh stats
-      api.getMe().then((r) => r && setStats(r.stats)).catch(() => {})
+      api.getMe().then((r) => {
+        if (r) {
+          setStats(r.stats)
+          setBusinesses(r.businesses)
+          if (r.businesses.length > 0) setActiveBusinessId(r.businesses[0].id)
+        }
+      }).catch(() => {})
       setView('dashboard')
-      router.refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Sign in failed')
     } finally {
@@ -48,7 +51,7 @@ export function LoginView() {
   }
 
   function fillDemo() {
-    setEmail('demo@cirkle.app')
+    setIdentifier('cirkle')
     setPassword('cirkle2025')
     setErrors({})
   }
@@ -56,7 +59,7 @@ export function LoginView() {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Sign in to your Cirkle identity and reach every connected app."
+      subtitle="Sign in with your Cirkle username or email — one identity reaches every app."
       footer={
         <>
           New to Cirkle?{' '}
@@ -71,21 +74,21 @@ export function LoginView() {
     >
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="identifier">Username or email</Label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <AtSign className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@cirkle.app"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              autoComplete="username"
+              placeholder="cirkle or you@cirkle.app"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               className="pl-9"
-              aria-invalid={!!errors.email}
+              aria-invalid={!!errors.identifier}
             />
           </div>
-          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+          {errors.identifier && <p className="text-xs text-destructive">{errors.identifier}</p>}
         </div>
 
         <div className="space-y-1.5">
@@ -123,7 +126,7 @@ export function LoginView() {
         <button type="button" onClick={fillDemo} className="font-medium text-primary hover:underline">
           fill credentials
         </button>
-        <div className="mt-1 font-mono text-[11px]">demo@cirkle.app · cirkle2025</div>
+        <div className="mt-1 font-mono text-[11px]">username: cirkle · password: cirkle2025</div>
       </div>
     </AuthShell>
   )

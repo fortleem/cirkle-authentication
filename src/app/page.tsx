@@ -15,6 +15,8 @@ export default function Home() {
   const user = useAuthStore((s) => s.user)
   const setUser = useAuthStore((s) => s.setUser)
   const setStats = useAuthStore((s) => s.setStats)
+  const setBusinesses = useAuthStore((s) => s.setBusinesses)
+  const setActiveBusinessId = useAuthStore((s) => s.setActiveBusinessId)
   const setView = useAuthStore((s) => s.setView)
   const hydrated = useAuthStore((s) => s.hydrated)
   const setHydrated = useAuthStore((s) => s.setHydrated)
@@ -29,6 +31,10 @@ export default function Home() {
         if (r) {
           setUser(r.user)
           setStats(r.stats)
+          setBusinesses(r.businesses)
+          if (r.businesses.length > 0) {
+            setActiveBusinessId(r.businesses[0].id)
+          }
           setView('dashboard')
         } else {
           setView('landing')
@@ -43,7 +49,7 @@ export default function Home() {
     return () => {
       mounted = false
     }
-  }, [setUser, setStats, setView, setHydrated])
+  }, [setUser, setStats, setBusinesses, setActiveBusinessId, setView, setHydrated])
 
   if (!hydrated) {
     return (

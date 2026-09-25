@@ -7,11 +7,16 @@ export const SESSION_COOKIE = 'cirkle_session'
 
 export interface AuthUser {
   id: string
+  username: string
   email: string
   name: string
   role: string
   twoFactorEnabled: boolean
   emailVerified: boolean
+  phoneVerified: boolean
+  kycVerified: boolean
+  businessVerified: boolean
+  phone: string | null
   avatarUrl: string | null
   lastLoginAt: Date | null
   createdAt: Date
@@ -57,11 +62,16 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     where: { id: payload.userId },
     select: {
       id: true,
+      username: true,
       email: true,
       name: true,
       role: true,
       twoFactorEnabled: true,
       emailVerified: true,
+      phoneVerified: true,
+      kycVerified: true,
+      businessVerified: true,
+      phone: true,
       avatarUrl: true,
       lastLoginAt: true,
       createdAt: true,

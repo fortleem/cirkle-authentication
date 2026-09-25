@@ -102,6 +102,15 @@ export function SecurityPanel() {
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <User className="h-3.5 w-3.5" /> Username
+            </div>
+            <p className="mt-1 truncate text-sm font-medium">@{user?.username}</p>
+            <div className="mt-2 inline-flex items-center gap-1 text-xs text-primary">
+              <CheckCircle2 className="h-3 w-3" /> Ecosystem handle
+            </div>
+          </div>
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Mail className="h-3.5 w-3.5" /> Email
             </div>
             <p className="mt-1 truncate text-sm font-medium">{user?.email}</p>

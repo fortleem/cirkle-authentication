@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Loader2, Mail, Lock, User, ArrowRight, Check } from 'lucide-react'
+import { Loader2, Mail, Lock, User, AtSign, ArrowRight, Check } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -30,20 +30,25 @@ export function RegisterView() {
   const setUser = useAuthStore((s) => s.setUser)
   const setView = useAuthStore((s) => s.setView)
   const setStats = useAuthStore((s) => s.setStats)
+  const setBusinesses = useAuthStore((s) => s.setBusinesses)
 
   const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [pending, setPending] = useState(false)
-  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({})
+  const [errors, setErrors] = useState<{ name?: string; username?: string; email?: string; password?: string }>({})
 
   const pwChecks = useMemo(() => checkPw(password), [password])
   const pwScore = Object.values(pwChecks).filter(Boolean).length
+
+  const usernameValid = /^[a-zA-Z0-9_.-]{3,30}$/.test(username)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     const next: typeof errors = {}
     if (name.trim().length < 2) next.name = 'Enter your full name'
+    if (!usernameValid) next.username = '3–30 chars: letters, numbers, dot, dash, underscore'
     if (!email.trim()) next.email = 'Email is required'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Enter a valid email'
     if (!pwChecks.length) next.password = 'Password must be at least 8 characters'
@@ -52,10 +57,11 @@ export function RegisterView() {
 
     setPending(true)
     try {
-      const { user } = await api.register({ name: name.trim(), email: email.trim(), password })
+      const { user } = await api.register({ name: name.trim(), username: username.trim(), email: email.trim(), password })
       setUser(user)
-      setStats({ connectedApps: 0, activeSessions: 1, auditEvents: 2 })
-      toast.success(`Welcome to Cirkle, ${user.name.split(' ')[0]}!`)
+      setStats({ connectedApps: 0, activeSessions: 1, auditEvents: 2, businesses: 0 })
+      setBusinesses([])
+      toast.success(`Welcome to Cirkle, ${user.name.split(' ')[0]}! Your username is @${user.username}`)
       setView('dashboard')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Registration failed')
@@ -67,7 +73,7 @@ export function RegisterView() {
   return (
     <AuthShell
       title="Create your Cirkle identity"
-      subtitle="One account unlocks Cirkle-Search and every product in the ecosystem."
+      subtitle="One username unlocks Cirkle-Search and every product — personal and business alike."
       footer={
         <>
           Already have an account?{' '}
@@ -97,6 +103,27 @@ export function RegisterView() {
             />
           </div>
           {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="username">Username</Label>
+          <div className="relative">
+            <AtSign className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="username"
+              type="text"
+              autoComplete="username"
+              placeholder="alex.cirkle"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase())}
+              className="pl-9"
+              aria-invalid={!!errors.username}
+            />
+          </div>
+          {errors.username && <p className="text-xs text-destructive">{errors.username}</p>}
+          {usernameValid && !errors.username && (
+            <p className="text-xs text-primary">Your handle across the whole ecosystem</p>
+          )}
         </div>
 
         <div className="space-y-1.5">

@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { api, type EcosystemApp } from '@/lib/api'
 import { getAppIcon } from '@/components/cirkle/app-icons'
+import { RequirementBadges } from '@/components/cirkle/requirement-badges'
 import { toast } from 'sonner'
 import { formatRelativeTime } from '@/lib/format'
 import { SsoConsentModal } from './sso-consent-modal'
@@ -181,6 +182,10 @@ export function AppsPanel() {
                 <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted-foreground">
                   {app.description}
                 </p>
+
+                {/* Dynamic per-platform auth requirements */}
+                <RequirementBadges reqs={app.requirements} className="mt-3" />
+
 
                 {app.authorized && (app.grantedAt || app.lastUsedAt) && (
                   <div className="mt-3 space-y-1 border-t border-border/40 pt-3 text-xs text-muted-foreground">

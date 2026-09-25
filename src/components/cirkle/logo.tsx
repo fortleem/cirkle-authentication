@@ -8,8 +8,9 @@ interface CirkleLogoProps {
 }
 
 /**
- * Cirkle logo — concentric rings forming a secure orbit, with a central node
- * representing the single identity at the center of the ecosystem.
+ * Cirkle logo — three golden circles rotating 360° around a central identity core.
+ * The trefoil of interlocking rings represents the unified Cirkle identity
+ * reaching personal, business, and the wider ecosystem from a single point.
  */
 export function CirkleLogo({
   className,
@@ -35,6 +36,9 @@ export function CirkleLogo({
 }
 
 export function CirkleMark({ size = 40, className }: { size?: number; className?: string }) {
+  // Unique gradient ids so multiple marks on one page don't clash
+  const gid = `cirkle-gold-${size}`
+  const cid = `cirkle-core-${size}`
   return (
     <svg
       width={size}
@@ -46,31 +50,36 @@ export function CirkleMark({ size = 40, className }: { size?: number; className?
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="cirkle-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="oklch(0.72 0.15 160)" />
-          <stop offset="0.55" stopColor="oklch(0.6 0.14 165)" />
-          <stop offset="1" stopColor="oklch(0.5 0.1 175)" />
+        <linearGradient id={gid} x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#f6d365" />
+          <stop offset="0.5" stopColor="#d4a017" />
+          <stop offset="1" stopColor="#a06d0c" />
         </linearGradient>
-        <radialGradient id="cirkle-core" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="oklch(0.95 0.05 160)" />
-          <stop offset="1" stopColor="oklch(0.62 0.13 160)" />
+        <radialGradient id={cid} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#fde68a" />
+          <stop offset="1" stopColor="#c9941a" />
         </radialGradient>
       </defs>
-      {/* Outer orbit ring */}
-      <circle cx="24" cy="24" r="21" stroke="url(#cirkle-grad)" strokeWidth="2" opacity="0.55" />
-      {/* Middle ring (open C arc) */}
-      <path
-        d="M 35 24 A 11 11 0 1 1 24 13"
-        stroke="url(#cirkle-grad)"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Orbiting node */}
-      <circle cx="24" cy="13" r="2.6" fill="url(#cirkle-grad)" />
-      {/* Core */}
-      <circle cx="24" cy="24" r="6" fill="url(#cirkle-core)" />
-      <circle cx="24" cy="24" r="6" stroke="oklch(0.99 0.005 145)" strokeWidth="0.6" strokeOpacity="0.6" />
+
+      {/* Outer golden ring (the Cirkle boundary) */}
+      <circle cx="24" cy="24" r="22" stroke={`url(#${gid})`} strokeWidth="1" opacity="0.4" />
+
+      {/* Three interlocking golden circles rotating 360° */}
+      <g
+        className="cirkle-spin-trefoil"
+        style={{ transformOrigin: '24px 24px' }}
+      >
+        {/* top */}
+        <circle cx="24" cy="17.5" r="9" stroke={`url(#${gid})`} strokeWidth="2.6" opacity="0.95" />
+        {/* bottom-left */}
+        <circle cx="18.4" cy="27.5" r="9" stroke={`url(#${gid})`} strokeWidth="2.6" opacity="0.95" />
+        {/* bottom-right */}
+        <circle cx="29.6" cy="27.5" r="9" stroke={`url(#${gid})`} strokeWidth="2.6" opacity="0.95" />
+      </g>
+
+      {/* Central identity core */}
+      <circle cx="24" cy="24" r="3.4" fill={`url(#${cid})`} />
+      <circle cx="24" cy="24" r="3.4" stroke="#fff7e0" strokeWidth="0.5" strokeOpacity="0.6" />
     </svg>
   )
 }

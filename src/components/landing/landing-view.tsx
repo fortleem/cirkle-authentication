@@ -145,7 +145,7 @@ export function LandingView() {
           >
             <div className="relative">
               <div className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-primary/20 blur-2xl" />
-              <CirkleMark size={88} className="drop-shadow-[0_8px_30px_oklch(0.62_0.13_160_/_0.35)]" />
+              <CirkleMark size={88} className="drop-shadow-[0_8px_30px_oklch(0.72_0.15_75_/_0.4)]" />
             </div>
           </motion.div>
 
@@ -155,7 +155,7 @@ export function LandingView() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-6xl"
           >
-            One identity. <span className="bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">Every Cirkle app.</span>
+            One identity. <span className="text-gold-gradient">Every Cirkle app.</span>
           </motion.h1>
 
           <motion.p
@@ -165,9 +165,10 @@ export function LandingView() {
             className="mx-auto mt-6 max-w-2xl text-pretty text-base text-muted-foreground sm:text-lg"
           >
             Cirkle Authentication is the single sign-on layer for the entire Cirkle
-            ecosystem. Create one account, authorize the products you use — like
-            <span className="font-medium text-foreground"> Cirkle-Search</span> — and
-            reach all of them with one secure identity.
+            ecosystem. Create <span className="font-medium text-foreground">one username</span> that
+            connects your personal and business identities together — and reach every product,
+            from <span className="font-medium text-foreground">Cirkle-Search</span> to finance,
+            legal, and healthcare AI.
           </motion.p>
 
           <motion.div
@@ -265,7 +266,7 @@ export function LandingView() {
                   <div>
                     <div className="text-lg font-semibold">{cirkleSearch.name}</div>
                     <p className="mt-1 text-sm text-muted-foreground">{cirkleSearch.description}</p>
-                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                       <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Ready to integrate
                     </div>
                   </div>

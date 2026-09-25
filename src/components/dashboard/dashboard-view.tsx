@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   Plug,
@@ -11,31 +10,52 @@ import {
   Menu,
   X,
   ChevronRight,
+  BadgeCheck,
+  UserCircle,
+  Building2,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { CirkleLogo } from '@/components/cirkle/logo'
 import { ThemeToggle } from '@/components/cirkle/theme-toggle'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 import { Footer } from '@/components/cirkle/footer'
 import { OverviewPanel } from './overview-panel'
 import { AppsPanel } from './apps-panel'
+import { IdentityPanel } from './identity-panel'
+import { BusinessPanel } from './business-panel'
 import { SecurityPanel } from './security-panel'
 import { ActivityPanel } from './activity-panel'
 
 const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: string }[] = [
   { key: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Your identity at a glance' },
   { key: 'apps', label: 'Connected apps', icon: Plug, description: 'Manage app authorizations' },
-  { key: 'security', label: 'Security', icon: ShieldCheck, description: '2FA, sessions, credentials' },
+  { key: 'identity', label: 'Identity', icon: UserCircle, description: 'Email, phone, KYC, 2FA' },
+  { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
+  { key: 'security', label: 'Security', icon: ShieldCheck, description: 'Sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
 
 export function DashboardView() {
   const user = useAuthStore((s) => s.user)
+  const stats = useAuthStore((s) => s.stats)
+  const businesses = useAuthStore((s) => s.businesses)
+  const setBusinesses = useAuthStore((s) => s.setBusinesses)
+  const activeBusinessId = useAuthStore((s) => s.activeBusinessId)
+  const setActiveBusinessId = useAuthStore((s) => s.setActiveBusinessId)
   const view = useAuthStore((s) => s.view)
   const dashboardTab = useAuthStore((s) => s.dashboardTab)
   const setDashboardTab = useAuthStore((s) => s.setDashboardTab)
@@ -44,12 +64,22 @@ export function DashboardView() {
   const router = useRouter()
   const [mobileNav, setMobileNav] = useState(false)
 
-  // If somehow landed here without a user, bounce back to landing
   useEffect(() => {
     if (!user && view === 'dashboard') {
       setView('landing')
     }
   }, [user, view, setView])
+
+  // Refresh businesses + stats on mount (in case they changed)
+  useEffect(() => {
+    if (user) {
+      api.getMe().then((r) => {
+        if (r) {
+          setBusinesses(r.businesses)
+        }
+      }).catch(() => {})
+    }
+  }, [user?.id])
 
   async function signOut() {
     try {
@@ -72,6 +102,9 @@ export function DashboardView() {
     .join('')
     .toUpperCase() || user.email[0]?.toUpperCase() || 'C'
 
+  const activeBusiness = businesses.find((b) => b.id === activeBusinessId)
+  const contextLabel = activeBusiness ? activeBusiness.name : 'Personal'
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <div className="cirkle-mesh absolute inset-0 -z-10 opacity-40" />
@@ -88,6 +121,46 @@ export function DashboardView() {
             </Badge>
           </div>
           <div className="flex items-center gap-2">
+            {/* Context switcher: Personal vs. businesses (one username → whole ecosystem) */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  {activeBusiness ? <Building2 className="h-3.5 w-3.5 text-primary" /> : <UserCircle className="h-3.5 w-3.5" />}
+                  <span className="hidden max-w-[120px] truncate sm:inline">{contextLabel}</span>
+                  <ChevronRight className="h-3 w-3 rotate-90 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  Identity · @{user.username}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={() => setActiveBusinessId(null)}
+                  className="gap-2"
+                >
+                  <UserCircle className="h-4 w-4" /> Personal
+                  {!activeBusinessId && <BadgeCheck className="ml-auto h-3.5 w-3.5 text-primary" />}
+                </DropdownMenuItem>
+                {businesses.length > 0 && <DropdownMenuSeparator />}
+                {businesses.map((b) => (
+                  <DropdownMenuItem
+                    key={b.id}
+                    onSelect={() => setActiveBusinessId(b.id)}
+                    className="gap-2"
+                  >
+                    <Building2 className="h-4 w-4" />
+                    <span className="truncate">{b.name}</span>
+                    {b.id === activeBusinessId && <BadgeCheck className="ml-auto h-3.5 w-3.5 text-primary" />}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => setDashboardTab('business')} className="gap-2">
+                  <Building2 className="h-4 w-4" /> Manage businesses
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <ThemeToggle />
             <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
               <LogOut className="h-3.5 w-3.5" />
@@ -129,14 +202,19 @@ export function DashboardView() {
                 >
                   <item.icon className={`h-4 w-4 ${active ? 'text-primary' : ''}`} />
                   <span className="flex-1">{item.label}</span>
+                  {item.key === 'business' && stats && stats.businesses > 0 && (
+                    <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">{stats.businesses}</Badge>
+                  )}
                   {active && <ChevronRight className="h-3.5 w-3.5" />}
                 </button>
               )
             })}
             <div className="my-3 border-t border-border/60" />
             <div className="rounded-xl border border-border/60 bg-card/50 p-3">
-              <p className="text-xs font-medium">Need help?</p>
-              <p className="mt-1 text-xs text-muted-foreground">Manage everything from this dashboard.</p>
+              <p className="text-xs font-medium">Unified identity</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                @{user.username} reaches personal + business context across the ecosystem.
+              </p>
             </div>
           </nav>
         </aside>
@@ -171,10 +249,7 @@ export function DashboardView() {
                     return (
                       <button
                         key={item.key}
-                        onClick={() => {
-                          setDashboardTab(item.key)
-                          setMobileNav(false)
-                        }}
+                        onClick={() => { setDashboardTab(item.key); setMobileNav(false) }}
                         className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm ${
                           active ? 'bg-primary/10 font-medium text-primary' : 'text-muted-foreground hover:bg-muted'
                         }`}
@@ -205,6 +280,8 @@ export function DashboardView() {
             >
               {dashboardTab === 'overview' && <OverviewPanel />}
               {dashboardTab === 'apps' && <AppsPanel />}
+              {dashboardTab === 'identity' && <IdentityPanel />}
+              {dashboardTab === 'business' && <BusinessPanel />}
               {dashboardTab === 'security' && <SecurityPanel />}
               {dashboardTab === 'activity' && <ActivityPanel />}
             </motion.div>

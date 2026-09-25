@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
+import { randomUUID } from 'crypto'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'cirkle-auth-dev-secret-change-in-production-2025'
 const SESSION_DURATION_DAYS = 30
@@ -21,7 +22,9 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function createSessionToken(payload: SessionToken): string {
-  return jwt.sign(payload, JWT_SECRET, {
+  // jti (JWT ID) makes every issued token unique even when the payload and
+  // issuance second are identical (e.g. register + immediate login).
+  return jwt.sign({ ...payload, jti: randomUUID() }, JWT_SECRET, {
     expiresIn: `${SESSION_DURATION_DAYS}d`,
     issuer: 'cirkle-authentication',
     audience: 'cirkle-ecosystem',
@@ -33,8 +36,13 @@ export function verifySessionToken(token: string): SessionToken | null {
     const decoded = jwt.verify(token, JWT_SECRET, {
       issuer: 'cirkle-authentication',
       audience: 'cirkle-ecosystem',
-    }) as SessionToken
-    return decoded
+    }) as JwtPayload & SessionToken
+    return {
+      userId: decoded.userId,
+      email: decoded.email,
+      name: decoded.name,
+      role: decoded.role,
+    }
   } catch {
     return null
   }

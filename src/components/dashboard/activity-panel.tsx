@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon } from 'lucide-react'
+import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { api, type AuditEntry } from '@/lib/api'
@@ -16,16 +16,30 @@ const ACTION_ICONS: Record<string, typeof LogIn> = {
   'app.revoked': Unplug,
   '2fa.enabled': ShieldCheck,
   '2fa.disabled': ShieldCheck,
+  'phone.verified': Phone,
+  'kyc.started': FileText,
+  'kyc.completed': BadgeCheck,
+  'business.created': Building2,
+  'business.updated': Building2,
+  'business.verified': BadgeCheck,
+  'business.deleted': Building2,
 }
 
 const ACTION_COLORS: Record<string, string> = {
   'session.login': 'bg-primary/10 text-primary',
   'session.logout': 'bg-muted text-muted-foreground',
   'user.registered': 'bg-primary/10 text-primary',
-  'app.authorized': 'bg-teal-500/10 text-teal-600 dark:text-teal-400',
-  'app.revoked': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'app.authorized': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'app.revoked': 'bg-destructive/10 text-destructive',
   '2fa.enabled': 'bg-primary/10 text-primary',
   '2fa.disabled': 'bg-destructive/10 text-destructive',
+  'phone.verified': 'bg-primary/10 text-primary',
+  'kyc.started': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'kyc.completed': 'bg-primary/10 text-primary',
+  'business.created': 'bg-primary/10 text-primary',
+  'business.updated': 'bg-muted text-muted-foreground',
+  'business.verified': 'bg-primary/10 text-primary',
+  'business.deleted': 'bg-destructive/10 text-destructive',
 }
 
 export function ActivityPanel() {

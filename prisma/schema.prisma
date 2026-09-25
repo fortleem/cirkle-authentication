@@ -1,5 +1,5 @@
-// Cirkle Authentication - Central SSO Identity Provider
-// https://pris.ly/d/prisma-schema
+// Cirkle Authentication — Central SSO Identity Provider
+// Unified identity (username) reaching personal + business contexts across the ecosystem
 
 generator client {
   provider = "prisma-client-js"
@@ -11,21 +11,30 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(cuid())
-  email            String         @unique
-  name             String
-  passwordHash     String
-  avatarUrl        String?
-  twoFactorEnabled Boolean        @default(false)
-  twoFactorSecret  String?
-  emailVerified    Boolean        @default(true)
-  role             String         @default("member")
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  lastLoginAt      DateTime?
-  sessions         Session[]
-  appAccess        UserAppAccess[]
-  auditLogs        AuditLog[]
+  id                String   @id @default(cuid())
+  // The single "1 username" that reaches the whole ecosystem
+  username          String   @unique
+  email             String   @unique
+  name              String
+  passwordHash      String
+  avatarUrl         String?
+  phone             String?
+  // Verification status — drives which apps the user can authorize
+  emailVerified     Boolean  @default(true)
+  phoneVerified     Boolean  @default(false)
+  kycVerified       Boolean  @default(false)
+  businessVerified  Boolean  @default(false)
+  twoFactorEnabled  Boolean  @default(false)
+  twoFactorSecret   String?
+  role              String   @default("member")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastLoginAt       DateTime?
+  sessions          Session[]
+  appAccess         UserAppAccess[]
+  auditLogs         AuditLog[]
+  ownedBusinesses   Business[] @relation("BusinessOwner")
+  businessMemberships UserBusiness[]
 }
 
 model Session {
@@ -41,33 +50,71 @@ model Session {
   @@index([userId])
 }
 
+model Business {
+  id            String   @id @default(cuid())
+  name          String
+  legalName     String?
+  taxId         String?
+  type          String   @default("sole")  // sole, llc, corp, partnership
+  country       String?
+  industry      String?
+  verified      Boolean  @default(false)
+  ownerId       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  owner         User     @relation("BusinessOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members       UserBusiness[]
+}
+
+model UserBusiness {
+  id          String   @id @default(cuid())
+  userId      String
+  businessId  String
+  role        String   @default("member")  // owner, admin, member
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([userId])
+}
+
 model ConnectedApp {
-  id          String           @id @default(cuid())
-  slug        String           @unique
-  name        String
-  description String
-  category    String
-  color       String
-  icon        String
-  homepage   String
-  redirectUrl String?
-  featured    Boolean          @default(false)
-  status      String           @default("active")
-  createdAt   DateTime         @default(now())
-  userAccess  UserAppAccess[]
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  name              String
+  description       String
+  category          String
+  color             String
+  icon              String
+  homepage          String
+  redirectUrl       String?
+  featured          Boolean  @default(false)
+  status            String   @default("active")
+  // Dynamic authentication requirements per platform
+  identityType      String   @default("either")    // personal | business | either
+  verificationLevel String   @default("basic")    // basic | enhanced | strict
+  twoFactorRequired Boolean  @default(false)
+  businessRequired  Boolean  @default(false)
+  requiredScopes    String   @default("openid profile email")
+  createdAt         DateTime @default(now())
+  userAccess        UserAppAccess[]
 
   @@index([slug])
 }
 
 model UserAppAccess {
-  id        String   @id @default(cuid())
-  userId    String
-  appId     String
-  scopes    String   @default("openid profile email")
-  grantedAt DateTime @default(now())
-  lastUsedAt DateTime?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  app       ConnectedApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  userId      String
+  appId       String
+  scopes      String   @default("openid profile email")
+  // Context: personal vs. business (for business-required apps)
+  contextType String   @default("personal")  // personal | business
+  businessId  String?
+  grantedAt   DateTime @default(now())
+  lastUsedAt  DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  app         ConnectedApp @relation(fields: [appId], references: [id], onDelete: Cascade)
 
   @@unique([userId, appId])
   @@index([userId])

@@ -73,6 +73,13 @@ export function formatActionLabel(action: string): string {
     'app.revoked': 'Revoked app access',
     '2fa.enabled': 'Two-factor enabled',
     '2fa.disabled': 'Two-factor disabled',
+    'phone.verified': 'Phone verified',
+    'kyc.started': 'KYC verification started',
+    'kyc.completed': 'Identity verified (KYC)',
+    'business.created': 'Business profile created',
+    'business.updated': 'Business profile updated',
+    'business.verified': 'Business verified',
+    'business.deleted': 'Business profile removed',
   }
   return map[action] ?? action.replace(/\./g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }

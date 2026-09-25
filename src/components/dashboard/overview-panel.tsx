@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Star,
   Sparkles,
+  Building2,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -39,7 +40,21 @@ export function OverviewPanel() {
     twoFactor: user?.twoFactorEnabled,
     sessions: stats?.activeSessions ?? 0,
     apps: stats?.connectedApps ?? 0,
+    phone: user?.phoneVerified,
+    kyc: user?.kycVerified,
+    business: user?.businessVerified,
   })
+
+  // Verification completeness for the unified identity
+  const verificationSteps = [
+    !!user?.emailVerified,
+    !!user?.phoneVerified,
+    !!user?.kycVerified,
+    !!user?.twoFactorEnabled,
+    !!user?.businessVerified,
+  ]
+  const verificationDone = verificationSteps.filter(Boolean).length
+  const verificationTier = verificationDone >= 5 ? 'Maximum' : verificationDone >= 3 ? 'Enhanced' : verificationDone >= 1 ? 'Basic' : 'Unverified'
 
   return (
     <div className="space-y-6">
@@ -57,12 +72,16 @@ export function OverviewPanel() {
             <div>
               <p className="text-sm text-muted-foreground">Welcome back,</p>
               <h1 className="text-2xl font-semibold tracking-tight">{user?.name}</h1>
-              <p className="mt-0.5 text-xs text-muted-foreground">{user?.email}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">@{user?.username}</span>
+                {' · '}
+                {user?.email}
+              </p>
             </div>
           </div>
           <div className="flex flex-col items-start gap-1 sm:items-end">
             <Badge variant="outline" className="gap-1.5 border-primary/30 bg-primary/5 text-primary">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Identity verified
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {verificationTier} identity
             </Badge>
             <p className="text-xs text-muted-foreground">
               Last sign-in {formatRelativeTime(user?.lastLoginAt)}
@@ -82,10 +101,10 @@ export function OverviewPanel() {
         />
         <StatCard
           icon={ShieldCheck}
-          label="Active sessions"
-          value={stats?.activeSessions ?? 0}
-          accent="teal"
-          onClick={() => setDashboardTab('security')}
+          label="Verification"
+          value={`${verificationDone}/5`}
+          accent="amber"
+          onClick={() => setDashboardTab('identity')}
         />
         <StatCard
           icon={Activity}
@@ -95,11 +114,11 @@ export function OverviewPanel() {
           onClick={() => setDashboardTab('activity')}
         />
         <StatCard
-          icon={KeyRound}
-          label="Two-factor"
-          value={user?.twoFactorEnabled ? 'On' : 'Off'}
-          accent={user?.twoFactorEnabled ? 'emerald' : 'amber'}
-          onClick={() => setDashboardTab('security')}
+          icon={Building2}
+          label="Business profiles"
+          value={stats?.businesses ?? 0}
+          accent="teal"
+          onClick={() => setDashboardTab('business')}
         />
       </div>
 
@@ -250,19 +269,14 @@ function StatCard({
   )
 }
 
-function computeSecurityScore({ twoFactor, sessions, apps }: { twoFactor?: boolean; sessions: number; apps: number }) {
-  let score = 40
-  if (twoFactor) {
-    score += 35
-  }
-  if (sessions <= 2) {
-    score += 15
-  } else if (sessions <= 4) {
-    score += 8
-  }
-  if (apps > 0) {
-    score += 10
-  }
+function computeSecurityScore({ twoFactor, sessions, apps, phone, kyc, business }: { twoFactor?: boolean; sessions: number; apps: number; phone?: boolean; kyc?: boolean; business?: boolean }) {
+  let score = 30
+  if (twoFactor) score += 25
+  if (phone) score += 10
+  if (kyc) score += 15
+  if (business) score += 10
+  if (sessions <= 2) score += 5
+  if (apps > 0) score += 5
   score = Math.min(score, 100)
   return {
     percent: score,

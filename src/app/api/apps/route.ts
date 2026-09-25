@@ -12,7 +12,7 @@ export async function GET() {
   const accessMap = user
     ? await db.userAppAccess.findMany({
         where: { userId: user.id },
-        select: { appId: true, grantedAt: true, lastUsedAt: true, scopes: true },
+        select: { appId: true, grantedAt: true, lastUsedAt: true, scopes: true, contextType: true, businessId: true },
       })
     : []
 
@@ -36,6 +36,16 @@ export async function GET() {
       grantedAt: access?.grantedAt ?? null,
       lastUsedAt: access?.lastUsedAt ?? null,
       scopes: access?.scopes ?? null,
+      contextType: access?.contextType ?? null,
+      businessId: access?.businessId ?? null,
+      // Dynamic authentication requirements per platform
+      requirements: {
+        identityType: app.identityType,
+        verificationLevel: app.verificationLevel,
+        twoFactorRequired: app.twoFactorRequired,
+        businessRequired: app.businessRequired,
+        requiredScopes: app.requiredScopes,
+      },
     }
   })
 
