@@ -14,6 +14,8 @@ import {
   UserCircle,
   Building2,
   Brain,
+  Orbit,
+  Command as CommandIcon,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -28,13 +30,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { CirkleLogo } from '@/components/cirkle/logo'
+import { IdentityDNA } from '@/components/cirkle/identity-dna'
 import { ThemeToggle } from '@/components/cirkle/theme-toggle'
+import { CommandPalette } from '@/components/cirkle/command-palette'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Footer } from '@/components/cirkle/footer'
 import { OverviewPanel } from './overview-panel'
+import { ConstellationPanel } from './constellation-panel'
 import { AppsPanel } from './apps-panel'
 import { IdentityPanel } from './identity-panel'
 import { BusinessPanel } from './business-panel'
@@ -45,6 +50,7 @@ import { OnboardingWizard } from './onboarding-wizard'
 
 const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: string }[] = [
   { key: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Your identity at a glance' },
+  { key: 'constellation', label: 'Constellation', icon: Orbit, description: 'Orbital identity map (breathtaking)' },
   { key: 'apps', label: 'Connected apps', icon: Plug, description: 'Manage app authorizations' },
   { key: 'identity', label: 'Security Center', icon: ShieldCheck, description: 'Posture, passkeys, recovery, 2FA' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
@@ -67,6 +73,19 @@ export function DashboardView() {
   const reset = useAuthStore((s) => s.reset)
   const router = useRouter()
   const [mobileNav, setMobileNav] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  // ⌘K / Ctrl+K toggles the command palette
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setPaletteOpen((v) => !v)
+      }
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   useEffect(() => {
     if (!user && view === 'dashboard') {
@@ -116,6 +135,9 @@ export function DashboardView() {
       {/* First-run onboarding wizard */}
       {user && !user.onboardingComplete && <OnboardingWizard />}
 
+      {/* Universal ⌘K command palette */}
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -128,6 +150,10 @@ export function DashboardView() {
             </Badge>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setPaletteOpen(true)} className="hidden gap-1.5 sm:inline-flex" title="Open command palette (⌘K)">
+              <CommandIcon className="h-3.5 w-3.5" />
+              <span className="text-xs">⌘K</span>
+            </Button>
             {/* Context switcher: Personal vs. businesses (one username → whole ecosystem) */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -173,11 +199,9 @@ export function DashboardView() {
               <LogOut className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Sign out</span>
             </Button>
-            <Avatar className="h-9 w-9 border border-border">
-              <AvatarFallback className="bg-primary text-xs font-semibold text-primary-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <div className="orbit-ring flex h-10 w-10 items-center justify-center rounded-full p-0.5" title={`@${user.username} identity DNA`}>
+              <IdentityDNA seed={user.username} size={34} />
+            </div>
             <Button
               variant="ghost"
               size="icon"
@@ -286,6 +310,7 @@ export function DashboardView() {
               transition={{ duration: 0.18 }}
             >
               {dashboardTab === 'overview' && <OverviewPanel />}
+              {dashboardTab === 'constellation' && <ConstellationPanel />}
               {dashboardTab === 'apps' && <AppsPanel />}
               {dashboardTab === 'identity' && <IdentityPanel />}
               {dashboardTab === 'business' && <BusinessPanel />}

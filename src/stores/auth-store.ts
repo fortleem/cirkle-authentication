@@ -49,6 +49,7 @@ export type View =
 
 export type DashboardTab =
   | 'overview'
+  | 'constellation'
   | 'apps'
   | 'identity'
   | 'business'
