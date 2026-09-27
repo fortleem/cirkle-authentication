@@ -29,6 +29,7 @@ import {
   ArrowRight,
   Search,
   Sparkles,
+  Eye,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -107,6 +108,14 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('brain')} className="gap-2">
             <Brain className="h-4 w-4 text-primary" /> Circle Brain (AI consensus)
             <CommandShortcut>brain</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('privacy')} className="gap-2">
+            <Eye className="h-4 w-4 text-primary" /> Privacy Simulator
+            <CommandShortcut>what can X see</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('timeline')} className="gap-2">
+            <Sparkles className="h-4 w-4 text-primary" /> Identity Timeline
+            <CommandShortcut>journey</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('security')} className="gap-2">
             <UserCircle className="h-4 w-4 text-primary" /> Sessions & credentials

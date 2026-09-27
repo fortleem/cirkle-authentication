@@ -16,6 +16,8 @@ import {
   Brain,
   Orbit,
   Command as CommandIcon,
+  Eye,
+  Sparkles,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -44,6 +46,8 @@ import { AppsPanel } from './apps-panel'
 import { IdentityPanel } from './identity-panel'
 import { BusinessPanel } from './business-panel'
 import { BrainPanel } from './brain-panel'
+import { PrivacyPanel } from './privacy-panel'
+import { TimelinePanel } from './timeline-panel'
 import { SecurityPanel } from './security-panel'
 import { ActivityPanel } from './activity-panel'
 import { OnboardingWizard } from './onboarding-wizard'
@@ -55,6 +59,8 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'identity', label: 'Security Center', icon: ShieldCheck, description: 'Posture, passkeys, recovery, 2FA' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
   { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
+  { key: 'privacy', label: 'Privacy', icon: Eye, description: 'What can each app see?' },
+  { key: 'timeline', label: 'Timeline', icon: Sparkles, description: 'Identity milestone journey' },
   { key: 'security', label: 'Sessions', icon: UserCircle, description: 'Active sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
@@ -315,6 +321,8 @@ export function DashboardView() {
               {dashboardTab === 'identity' && <IdentityPanel />}
               {dashboardTab === 'business' && <BusinessPanel />}
               {dashboardTab === 'brain' && <BrainPanel />}
+              {dashboardTab === 'privacy' && <PrivacyPanel />}
+              {dashboardTab === 'timeline' && <TimelinePanel />}
               {dashboardTab === 'security' && <SecurityPanel />}
               {dashboardTab === 'activity' && <ActivityPanel />}
             </motion.div>
