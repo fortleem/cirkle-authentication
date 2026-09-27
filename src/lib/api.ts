@@ -273,4 +273,58 @@ export const api = {
     const res = await fetch('/api/ai/health', { cache: 'no-store' })
     return parseResponse(res)
   },
+
+  // Recovery codes
+  async generateRecoveryCodes(): Promise<{ codes: string[]; generatedAt: string }> {
+    const res = await fetch('/api/recovery-codes/generate', { method: 'POST' })
+    return parseResponse(res)
+  },
+  async loginWithRecoveryCode(identifier: string, code: string): Promise<{ user: AuthUser }> {
+    const res = await fetch('/api/recovery-codes/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, code }),
+    })
+    return parseResponse(res)
+  },
+
+  // Passkeys (WebAuthn)
+  async passkeyRegisterStart(): Promise<{ options: any; challengeToken: string }> {
+    const res = await fetch('/api/passkey/register/start', { method: 'POST' })
+    return parseResponse(res)
+  },
+  async passkeyRegisterFinish(credential: any, challengeToken: string, name?: string): Promise<{ ok: boolean }> {
+    const res = await fetch('/api/passkey/register/finish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential, challengeToken, name }),
+    })
+    return parseResponse(res)
+  },
+  async passkeyLoginStart(): Promise<{ options: any; challengeToken: string }> {
+    const res = await fetch('/api/passkey/login/start', { method: 'POST' })
+    return parseResponse(res)
+  },
+  async passkeyLoginFinish(credential: any, challengeToken: string): Promise<{ user: AuthUser }> {
+    const res = await fetch('/api/passkey/login/finish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential, challengeToken }),
+    })
+    return parseResponse(res)
+  },
+  async listPasskeys(): Promise<{ passkeys: { id: string; name: string; deviceType: string | null; createdAt: string; lastUsedAt: string | null }[] }> {
+    const res = await fetch('/api/passkey', { cache: 'no-store' })
+    return parseResponse(res)
+  },
+  async deletePasskey(id: string): Promise<{ ok: boolean }> {
+    const res = await fetch(`/api/passkey/${id}`, { method: 'DELETE' })
+    return parseResponse(res)
+  },
+
+  // Onboarding
+  async completeOnboarding(): Promise<{ ok: boolean }> {
+    const res = await fetch('/api/onboarding/complete', { method: 'POST' })
+    return parseResponse(res)
+  },
 }

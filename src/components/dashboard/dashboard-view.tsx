@@ -41,14 +41,15 @@ import { BusinessPanel } from './business-panel'
 import { BrainPanel } from './brain-panel'
 import { SecurityPanel } from './security-panel'
 import { ActivityPanel } from './activity-panel'
+import { OnboardingWizard } from './onboarding-wizard'
 
 const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: string }[] = [
   { key: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Your identity at a glance' },
   { key: 'apps', label: 'Connected apps', icon: Plug, description: 'Manage app authorizations' },
-  { key: 'identity', label: 'Identity', icon: UserCircle, description: 'Email, phone, KYC, 2FA' },
+  { key: 'identity', label: 'Security Center', icon: ShieldCheck, description: 'Posture, passkeys, recovery, 2FA' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
   { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
-  { key: 'security', label: 'Security', icon: ShieldCheck, description: 'Sessions & credentials' },
+  { key: 'security', label: 'Sessions', icon: UserCircle, description: 'Active sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
 
@@ -111,6 +112,9 @@ export function DashboardView() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <div className="cirkle-mesh absolute inset-0 -z-10 opacity-40" />
+
+      {/* First-run onboarding wizard */}
+      {user && !user.onboardingComplete && <OnboardingWizard />}
 
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">

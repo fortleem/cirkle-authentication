@@ -81,6 +81,14 @@ export function formatActionLabel(action: string): string {
     'business.verified': 'Business verified',
     'business.deleted': 'Business profile removed',
     'brain.ask': 'Circle Brain query',
+    'brain.ask.distilled': 'Brain query distilled',
+    'passkey.added': 'Passkey added',
+    'passkey.removed': 'Passkey removed',
+    'recovery-codes.generated': 'Recovery codes generated',
+    'recovery-code.used': 'Signed in via recovery code',
+    'onboarding.completed': 'Onboarding completed',
+    'user.welcomed': 'Welcome dispatched',
+    'app.authorized.distilled': 'Authorization distilled',
   }
   return map[action] ?? action.replace(/\./g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }

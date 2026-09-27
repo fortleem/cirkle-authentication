@@ -26,6 +26,11 @@ model User {
   businessVerified  Boolean  @default(false)
   twoFactorEnabled  Boolean  @default(false)
   twoFactorSecret   String?
+  // Recovery codes (top-of-line 2FA fallback) — bcrypt-hashed, one-time use
+  recoveryCodesHash String?
+  recoveryCodesGeneratedAt DateTime?
+  // Onboarding state
+  onboardingComplete Boolean  @default(false)
   role              String   @default("member")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -35,6 +40,24 @@ model User {
   auditLogs         AuditLog[]
   ownedBusinesses   Business[] @relation("BusinessOwner")
   businessMemberships UserBusiness[]
+  passkeys           Passkey[]
+}
+
+model Passkey {
+  id            String   @id @default(cuid())
+  userId        String
+  // WebAuthn credential ID (base64url)
+  credentialId  String   @unique
+  publicKey     String
+  counter       Int      @default(0)
+  deviceType    String?
+  transports    String?
+  name          String   @default("Passkey")
+  createdAt     DateTime @default(now())
+  lastUsedAt    DateTime?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Session {

@@ -13,6 +13,9 @@ export interface AuthUser {
   phoneVerified: boolean
   kycVerified: boolean
   businessVerified: boolean
+  hasRecoveryCodes: boolean
+  hasPasskey: boolean
+  onboardingComplete: boolean
   phone: string | null
   avatarUrl: string | null
   createdAt: string

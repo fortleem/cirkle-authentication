@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText, Sparkles } from 'lucide-react'
+import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText, Sparkles, Fingerprint, CheckCircle2 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { api, type AuditEntry } from '@/lib/api'
@@ -24,6 +24,14 @@ const ACTION_ICONS: Record<string, typeof LogIn> = {
   'business.verified': BadgeCheck,
   'business.deleted': Building2,
   'brain.ask': Sparkles,
+  'brain.ask.distilled': Sparkles,
+  'passkey.added': Fingerprint,
+  'passkey.removed': Fingerprint,
+  'recovery-codes.generated': KeyRound,
+  'recovery-code.used': KeyRound,
+  'onboarding.completed': CheckCircle2,
+  'user.welcomed': UserIcon,
+  'app.authorized.distilled': BadgeCheck,
 }
 
 const ACTION_COLORS: Record<string, string> = {
@@ -42,6 +50,14 @@ const ACTION_COLORS: Record<string, string> = {
   'business.verified': 'bg-primary/10 text-primary',
   'business.deleted': 'bg-destructive/10 text-destructive',
   'brain.ask': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'brain.ask.distilled': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'passkey.added': 'bg-primary/10 text-primary',
+  'passkey.removed': 'bg-destructive/10 text-destructive',
+  'recovery-codes.generated': 'bg-primary/10 text-primary',
+  'recovery-code.used': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'onboarding.completed': 'bg-primary/10 text-primary',
+  'user.welcomed': 'bg-primary/10 text-primary',
+  'app.authorized.distilled': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
 }
 
 export function ActivityPanel() {

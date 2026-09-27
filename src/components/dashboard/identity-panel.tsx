@@ -12,6 +12,8 @@ import {
   ArrowRight,
   IdCard,
   Building2,
+  Fingerprint,
+  KeyRound,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,9 +24,12 @@ import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/auth-store'
 import { formatRelativeTime } from '@/lib/format'
+import { PostureGauge } from '@/components/cirkle/posture-gauge'
+import { PasskeySection } from '@/components/cirkle/passkey-section'
+import { RecoveryCodesSection } from '@/components/cirkle/recovery-codes-section'
 
 interface VStep {
-  key: 'email' | 'phone' | 'kyc' | 'twoFactor' | 'business'
+  key: 'email' | 'phone' | 'kyc' | 'twoFactor' | 'business' | 'passkey' | 'recovery'
   icon: typeof Mail
   title: string
   description: string
@@ -46,13 +51,16 @@ export function IdentityPanel() {
   const steps: VStep[] = [
     { key: 'email', icon: Mail, title: 'Email verified', description: 'Your email is confirmed and trusted.', met: user.emailVerified, meta: user.email },
     { key: 'phone', icon: Phone, title: 'Phone verified', description: 'Adds a recovery channel and unlocks Enhanced apps.', met: user.phoneVerified, meta: user.phone ?? undefined },
-    { key: 'kyc', icon: IdCard, title: 'Identity (KYC)', description: 'Government ID + selfie verification via Cirkle Verify. Required for Strict-level apps.', met: user.kycVerified },
     { key: 'twoFactor', icon: ShieldCheck, title: 'Two-factor auth', description: 'One-time code at sign-in. Required by finance, legal & healthcare apps.', met: user.twoFactorEnabled },
+    { key: 'passkey', icon: Fingerprint, title: 'Passkey (WebAuthn)', description: 'Passwordless sign-in with your fingerprint / face / device screen lock.', met: user.hasPasskey },
+    { key: 'recovery', icon: KeyRound, title: 'Recovery codes', description: 'One-time backup codes — the 2FA fallback if you ever lose your device.', met: user.hasRecoveryCodes },
+    { key: 'kyc', icon: IdCard, title: 'Identity (KYC)', description: 'Government ID + selfie verification via Cirkle Verify. Required for Strict-level apps.', met: user.kycVerified },
     { key: 'business', icon: Building2, title: 'Business profile', description: 'A verified business is required for SGTX, PPE, MTQ Sigma & Olymp-Ex.', met: user.businessVerified },
   ]
 
   const completed = steps.filter((s) => s.met).length
-  const tier = completed >= 5 ? 'Maximum' : completed >= 3 ? 'Enhanced' : completed >= 1 ? 'Basic' : 'Unverified'
+  const tier = completed >= 7 ? 'Maximum' : completed >= 4 ? 'Enhanced' : completed >= 1 ? 'Basic' : 'Unverified'
+  const postureScore = Math.round((completed / steps.length) * 100)
 
   async function verifyPhone() {
     if (!phoneInput.trim() || phoneInput.trim().length < 7) {
@@ -108,23 +116,26 @@ export function IdentityPanel() {
         </p>
       </div>
 
-      {/* Verification tier summary */}
-      <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/8 via-card to-card p-6">
-        <div className="cirkle-mesh absolute inset-0 -z-10 opacity-50" />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Badge variant="outline" className="mb-2 gap-1.5 border-primary/30 bg-primary/5 text-primary">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Verification tier: {tier}
-            </Badge>
-            <h3 className="text-lg font-semibold">{completed} of {steps.length} verification steps complete</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Higher tiers unlock finance, healthcare, legal, and maritime platforms.
-            </p>
-          </div>
-          <div className="flex gap-1">
-            {steps.map((s) => (
-              <div key={s.key} className={`h-2 w-8 rounded-full ${s.met ? 'bg-primary' : 'bg-muted-foreground/20'}`} />
-            ))}
+      {/* Security posture scorecard — flagship */}
+      <Card className="orbit-ring relative overflow-hidden p-6">
+        <div className="aurora-bg absolute inset-0 -z-10 opacity-50" />
+        <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+            <PostureGauge score={completed} total={steps.length} />
+            <div>
+              <Badge variant="outline" className="mb-2 gap-1.5 border-primary/30 bg-primary/5 text-primary">
+                <span className="signal-dot" data-state={completed > 0 ? undefined : 'off'} /> Tier: {tier}
+              </Badge>
+              <h3 className="font-display text-lg font-semibold">{completed} of {steps.length} security steps complete</h3>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">
+                Higher tiers unlock finance, healthcare, legal, and maritime platforms — and passwordless sign-in.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1">
+                {steps.map((s) => (
+                  <div key={s.key} className={`h-1.5 w-7 rounded-full ${s.met ? 'bg-primary' : 'bg-muted-foreground/20'}`} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </Card>
@@ -212,6 +223,12 @@ export function IdentityPanel() {
           </Card>
         ))}
       </div>
+
+      {/* Passkeys (WebAuthn) — passwordless flagship */}
+      <PasskeySection />
+
+      {/* Recovery codes — 2FA fallback */}
+      <RecoveryCodesSection />
 
       <p className="text-center text-xs text-muted-foreground">
         Identity: <strong className="text-foreground">@{user.username}</strong> · Member since {formatRelativeTime(user.createdAt)}

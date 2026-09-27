@@ -16,6 +16,9 @@ export interface AuthUser {
   phoneVerified: boolean
   kycVerified: boolean
   businessVerified: boolean
+  hasRecoveryCodes: boolean
+  hasPasskey: boolean
+  onboardingComplete: boolean
   phone: string | null
   avatarUrl: string | null
   lastLoginAt: Date | null
@@ -71,13 +74,22 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       phoneVerified: true,
       kycVerified: true,
       businessVerified: true,
+      recoveryCodesHash: true,
+      onboardingComplete: true,
       phone: true,
       avatarUrl: true,
       lastLoginAt: true,
       createdAt: true,
+      _count: { select: { passkeys: true } },
     },
   })
-  return user
+  if (!user) return null
+  const { recoveryCodesHash, _count, ...rest } = user
+  return {
+    ...rest,
+    hasRecoveryCodes: !!recoveryCodesHash,
+    hasPasskey: _count.passkeys > 0,
+  }
 }
 
 export function getClientIp(req: NextRequest): string {
