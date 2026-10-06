@@ -30,6 +30,7 @@ import {
   Search,
   Sparkles,
   Eye,
+  BookOpen,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -92,6 +93,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('constellation')} className="gap-2">
             <Orbit className="h-4 w-4 text-primary" /> Identity Constellation
             <CommandShortcut>breathtaking</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('atlas')} className="gap-2">
+            <BookOpen className="h-4 w-4 text-primary" /> Auth Atlas (methods × platforms)
+            <CommandShortcut>catalog</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('apps')} className="gap-2">
             <Plug className="h-4 w-4 text-primary" /> Connected apps
