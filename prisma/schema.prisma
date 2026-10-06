@@ -41,6 +41,24 @@ model User {
   ownedBusinesses   Business[] @relation("BusinessOwner")
   businessMemberships UserBusiness[]
   passkeys           Passkey[]
+  guardians          Guardian[]
+}
+
+// Social Recovery (M-of-N Shamir's Secret Sharing)
+// Each user designates N guardians; a recovery secret is split into N shares,
+// one stored per guardian (encrypted-at-rest share). Any M reconstruct it.
+model Guardian {
+  id          String   @id @default(cuid())
+  userId      String   // the protected user
+  label       String   // friendly name for the guardian
+  handle      String   // guardian's @username or email
+  share       String   // base64 Shamir share (held in escrow for the demo)
+  threshold   Int      // M (copied per-row for convenience)
+  total       Int      // N
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Passkey {

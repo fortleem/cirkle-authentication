@@ -327,4 +327,30 @@ export const api = {
     const res = await fetch('/api/onboarding/complete', { method: 'POST' })
     return parseResponse(res)
   },
+
+  // Social Recovery (Shamir's SSS)
+  async getRecoveryGuardians(): Promise<{ guardians: { id: string; label: string; handle: string; threshold: number; total: number; createdAt: string }[] }> {
+    const res = await fetch('/api/recovery/setup', { cache: 'no-store' })
+    return parseResponse(res)
+  },
+  async setupRecovery(guardians: { label: string; handle: string }[], threshold: number): Promise<{ ok: boolean; total: number; threshold: number; secretHash: string; guardians: { id: string; label: string; handle: string; share: string }[] }> {
+    const res = await fetch('/api/recovery/setup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ guardians, threshold }),
+    })
+    return parseResponse(res)
+  },
+  async teardownRecovery(): Promise<{ ok: boolean }> {
+    const res = await fetch('/api/recovery/setup', { method: 'DELETE' })
+    return parseResponse(res)
+  },
+  async reconstructRecovery(identifier: string, shares: string[]): Promise<{ user: AuthUser }> {
+    const res = await fetch('/api/recovery/reconstruct', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, shares }),
+    })
+    return parseResponse(res)
+  },
 }

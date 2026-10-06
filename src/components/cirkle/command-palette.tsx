@@ -31,6 +31,8 @@ import {
   Sparkles,
   Eye,
   BookOpen,
+  Radar,
+  Users,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -97,6 +99,14 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('atlas')} className="gap-2">
             <BookOpen className="h-4 w-4 text-primary" /> Auth Atlas (methods × platforms)
             <CommandShortcut>catalog</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('risk')} className="gap-2">
+            <Radar className="h-4 w-4 text-primary" /> Risk Radar (adaptive scoring)
+            <CommandShortcut>risk</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('guardians')} className="gap-2">
+            <Users className="h-4 w-4 text-primary" /> Guardians (M-of-N recovery)
+            <CommandShortcut>shamir</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('apps')} className="gap-2">
             <Plug className="h-4 w-4 text-primary" /> Connected apps

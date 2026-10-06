@@ -19,6 +19,8 @@ import {
   Eye,
   Sparkles,
   BookOpen,
+  Radar,
+  Users,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -43,9 +45,11 @@ import { useRouter } from 'next/navigation'
 import { Footer } from '@/components/cirkle/footer'
 import { OverviewPanel } from './overview-panel'
 import { ConstellationPanel } from './constellation-panel'
+import { RiskRadarPanel } from './risk-radar-panel'
 import { AuthAtlasPanel } from './auth-atlas-panel'
 import { AppsPanel } from './apps-panel'
 import { IdentityPanel } from './identity-panel'
+import { GuardiansPanel } from './guardians-panel'
 import { BusinessPanel } from './business-panel'
 import { BrainPanel } from './brain-panel'
 import { PrivacyPanel } from './privacy-panel'
@@ -57,9 +61,11 @@ import { OnboardingWizard } from './onboarding-wizard'
 const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: string }[] = [
   { key: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Your identity at a glance' },
   { key: 'constellation', label: 'Constellation', icon: Orbit, description: 'Orbital identity map (breathtaking)' },
+  { key: 'risk', label: 'Risk Radar', icon: Radar, description: 'Adaptive risk scoring + step-up' },
   { key: 'atlas', label: 'Auth Atlas', icon: BookOpen, description: 'Auth methods × platform matrix' },
   { key: 'apps', label: 'Connected apps', icon: Plug, description: 'Manage app authorizations' },
   { key: 'identity', label: 'Security Center', icon: ShieldCheck, description: 'Posture, passkeys, recovery, 2FA' },
+  { key: 'guardians', label: 'Guardians', icon: Users, description: 'M-of-N social recovery (Shamir SSS)' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
   { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
   { key: 'privacy', label: 'Privacy', icon: Eye, description: 'What can each app see?' },
@@ -320,9 +326,11 @@ export function DashboardView() {
             >
               {dashboardTab === 'overview' && <OverviewPanel />}
               {dashboardTab === 'constellation' && <ConstellationPanel />}
+              {dashboardTab === 'risk' && <RiskRadarPanel />}
               {dashboardTab === 'atlas' && <AuthAtlasPanel />}
               {dashboardTab === 'apps' && <AppsPanel />}
               {dashboardTab === 'identity' && <IdentityPanel />}
+              {dashboardTab === 'guardians' && <GuardiansPanel />}
               {dashboardTab === 'business' && <BusinessPanel />}
               {dashboardTab === 'brain' && <BrainPanel />}
               {dashboardTab === 'privacy' && <PrivacyPanel />}
