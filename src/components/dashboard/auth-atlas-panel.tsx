@@ -38,6 +38,7 @@ import {
   type AuthMethod,
 } from '@/lib/auth-catalog'
 import { verificationLevelLabel, identityTypeLabel } from '@/lib/requirements'
+import { statusLabel as qsLabel, statusColor as qsColor } from '@/lib/quantum-readiness'
 
 export function AuthAtlasPanel() {
   const [apps, setApps] = useState<EcosystemApp[]>([])
@@ -209,9 +210,14 @@ function MethodCard({ method, index }: { method: AuthMethod; index: number }) {
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold">{method.name}</h3>
-            <Badge variant="outline" className={`mt-1 px-1.5 py-0 text-[10px] ${categoryColor(method.category)}`}>
-              {categoryLabel(method.category)}
-            </Badge>
+            <div className="mt-1 flex flex-wrap items-center gap-1">
+              <Badge variant="outline" className={`px-1.5 py-0 text-[10px] ${categoryColor(method.category)}`}>
+                {categoryLabel(method.category)}
+              </Badge>
+              <Badge variant="outline" className={`px-1.5 py-0 text-[10px] ${qsColor(method.quantumSafe)}`} title={`Quantum-readiness: ${qsLabel(method.quantumSafe)}`}>
+                {qsLabel(method.quantumSafe)}
+              </Badge>
+            </div>
           </div>
         </div>
         <p className="mb-3 text-sm text-muted-foreground">{method.summary}</p>

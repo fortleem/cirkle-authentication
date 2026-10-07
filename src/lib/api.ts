@@ -103,6 +103,24 @@ export interface BrainConsensus {
   totalCount: number
 }
 
+export interface PostureScore {
+  score: number
+  level: string
+  safeCount: number
+  vulnerableCount: number
+  hybridCount: number
+  total: number
+}
+
+export interface PQVerifyResult {
+  hasAttestation: boolean
+  valid?: boolean
+  publicKey?: string
+  message?: string
+  createdAt?: string
+  posture: PostureScore
+}
+
 export interface AuthorizeRequirementsMissing {
   error: string
   requirements: RequirementCheck[]
@@ -351,6 +369,16 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier, shares }),
     })
+    return parseResponse(res)
+  },
+
+  // Post-quantum attestation (ML-DSA-65 / FIPS 204)
+  async pqAttest(): Promise<{ attestation: { publicKey: string; signature: string; message: string; algorithm: string; securityLevel: number; createdAt: string }; posture: PostureScore }> {
+    const res = await fetch('/api/pq/attest', { method: 'POST' })
+    return parseResponse(res)
+  },
+  async pqVerify(): Promise<PQVerifyResult> {
+    const res = await fetch('/api/pq/verify', { cache: 'no-store' })
     return parseResponse(res)
   },
 }

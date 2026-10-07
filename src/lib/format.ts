@@ -89,6 +89,9 @@ export function formatActionLabel(action: string): string {
     'onboarding.completed': 'Onboarding completed',
     'user.welcomed': 'Welcome dispatched',
     'app.authorized.distilled': 'Authorization distilled',
+    'pq.attestation.generated': 'Post-quantum attestation issued',
+    'recovery.setup': 'Social recovery configured',
+    'recovery.reconstructed': 'Account recovered (Shamir SSS)',
   }
   return map[action] ?? action.replace(/\./g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }

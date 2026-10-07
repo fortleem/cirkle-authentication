@@ -59,6 +59,7 @@ export type DashboardTab =
   | 'brain'
   | 'privacy'
   | 'timeline'
+  | 'quantum'
   | 'security'
   | 'activity'
 

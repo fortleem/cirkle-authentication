@@ -29,6 +29,11 @@ model User {
   // Recovery codes (top-of-line 2FA fallback) — bcrypt-hashed, one-time use
   recoveryCodesHash String?
   recoveryCodesGeneratedAt DateTime?
+  // Post-quantum ML-DSA-65 identity attestation (FIPS 204)
+  pqAttestationPubKey String?
+  pqAttestationSig    String?
+  pqAttestationMsg    String?
+  pqAttestationAt     DateTime?
   // Onboarding state
   onboardingComplete Boolean  @default(false)
   role              String   @default("member")

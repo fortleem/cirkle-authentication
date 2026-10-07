@@ -30,6 +30,7 @@ export interface AuthMethod {
   ux: UXLevel
   description: string
   usedFor: string[]
+  quantumSafe: 'safe' | 'vulnerable' | 'hybrid' // post-quantum readiness
 }
 
 export const AUTH_METHODS: AuthMethod[] = [
@@ -44,6 +45,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'easy',
     description: 'Your unique @handle across the whole ecosystem. Login accepts it or your email interchangeably. Personal + business profiles attach to it.',
     usedFor: ['identification', 'sign-in handle', 'ecosystem-wide reach'],
+    quantumSafe: 'safe',
   },
   {
     id: 'password',
@@ -56,6 +58,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'moderate',
     description: 'The baseline sign-in secret. Hashed with bcrypt, never stored in plaintext, never shared with apps. Minimum 8 chars; strength meter guides you.',
     usedFor: ['baseline sign-in', 'fallback when no passkey'],
+    quantumSafe: 'safe',
   },
   {
     id: 'passkey',
@@ -68,6 +71,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'easy',
     description: 'The modern standard. A credential bound to your device + biometric/screen-lock. No password, no phishable secret. Stateless HMAC-signed challenges.',
     usedFor: ['passwordless sign-in', 'modern primary CTA', 'touch ID / face ID'],
+    quantumSafe: 'hybrid',
   },
   {
     id: 'totp-2fa',
@@ -80,6 +84,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'moderate',
     description: 'A time-based one-time password from an authenticator app. Adds a second factor beyond the password. Mandatory for finance, legal, healthcare apps.',
     usedFor: ['finance', 'legal', 'healthcare', 'step-up', 'high-risk apps'],
+    quantumSafe: 'safe',
   },
   {
     id: 'recovery-codes',
@@ -92,6 +97,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'moderate',
     description: 'One-time codes (XXXX-XXXX-XXXX, scrypt-hashed) generated when 2FA is on. Each works once. Use them to sign in if your authenticator device is lost.',
     usedFor: ['2FA fallback', 'account recovery', 'lost-device'],
+    quantumSafe: 'safe',
   },
   {
     id: 'phone',
@@ -104,6 +110,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'moderate',
     description: 'A verified phone adds a recovery channel and lifts you to the Enhanced tier, unlocking more apps. Verified via an OTP/preview flow.',
     usedFor: ['Enhanced-tier apps', 'recovery channel', 'Wasl, Cirkle Mail, MTQ'],
+    quantumSafe: 'safe',
   },
   {
     id: 'kyc',
@@ -116,6 +123,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'friction',
     description: 'Identity verification: government ID + selfie. Lifts you to the Strict tier, unlocking healthcare, finance-KYC, and the Cirkle Verify core itself.',
     usedFor: ['Strict-tier apps', 'healthcare (Wedjat)', 'Verify core', 'MTQ Sigma'],
+    quantumSafe: 'safe',
   },
   {
     id: 'business',
@@ -128,6 +136,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'friction',
     description: 'A linked + verified business profile attached to your single @username. Required for SGTX, PPE Smart, MTQ Sigma, and Olymp-Ex. Personal + business share one identity.',
     usedFor: ['business-required apps', 'SGTX', 'PPE', 'Olymp-Ex', 'MTQ Sigma'],
+    quantumSafe: 'safe',
   },
   {
     id: 'session-cookie',
@@ -140,6 +149,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'easy',
     description: 'The signed-in state: a JWT (with a unique jti) stored in an httpOnly + sameSite=lax cookie. Validated against the DB session table. Revocable per-device.',
     usedFor: ['persistent sign-in', '30-day session', 'per-device revocation'],
+    quantumSafe: 'safe',
   },
   {
     id: 'oauth-scopes',
@@ -152,6 +162,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'easy',
     description: 'Each app receives only the scopes it was granted (openid, profile, email, search.read, health.read, …). Apps never see your password, 2FA secret, or session tokens.',
     usedFor: ['per-app authorization', 'scoped data access', 'least-privilege'],
+    quantumSafe: 'safe',
   },
   {
     id: 'consent',
@@ -164,6 +175,7 @@ export const AUTH_METHODS: AuthMethod[] = [
     ux: 'easy',
     description: 'Every app connection goes through a consent modal: shows the app, requested scopes, and a live requirement checklist. Authorize is disabled until requirements are met. Revocable anytime.',
     usedFor: ['every app connection', 'dynamic requirements', 'revocable access'],
+    quantumSafe: 'safe',
   },
 ]
 

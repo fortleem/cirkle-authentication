@@ -21,6 +21,7 @@ import {
   BookOpen,
   Radar,
   Users,
+  Atom,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -54,6 +55,7 @@ import { BusinessPanel } from './business-panel'
 import { BrainPanel } from './brain-panel'
 import { PrivacyPanel } from './privacy-panel'
 import { TimelinePanel } from './timeline-panel'
+import { QuantumReadinessPanel } from './quantum-readiness-panel'
 import { SecurityPanel } from './security-panel'
 import { ActivityPanel } from './activity-panel'
 import { OnboardingWizard } from './onboarding-wizard'
@@ -70,6 +72,7 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
   { key: 'privacy', label: 'Privacy', icon: Eye, description: 'What can each app see?' },
   { key: 'timeline', label: 'Timeline', icon: Sparkles, description: 'Identity milestone journey' },
+  { key: 'quantum', label: 'Quantum', icon: Atom, description: 'Post-quantum readiness + ML-DSA attestation' },
   { key: 'security', label: 'Sessions', icon: UserCircle, description: 'Active sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
@@ -335,6 +338,7 @@ export function DashboardView() {
               {dashboardTab === 'brain' && <BrainPanel />}
               {dashboardTab === 'privacy' && <PrivacyPanel />}
               {dashboardTab === 'timeline' && <TimelinePanel />}
+              {dashboardTab === 'quantum' && <QuantumReadinessPanel />}
               {dashboardTab === 'security' && <SecurityPanel />}
               {dashboardTab === 'activity' && <ActivityPanel />}
             </motion.div>

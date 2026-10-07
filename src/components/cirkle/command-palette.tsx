@@ -33,6 +33,7 @@ import {
   BookOpen,
   Radar,
   Users,
+  Atom,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -131,6 +132,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('timeline')} className="gap-2">
             <Sparkles className="h-4 w-4 text-primary" /> Identity Timeline
             <CommandShortcut>journey</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('quantum')} className="gap-2">
+            <Atom className="h-4 w-4 text-primary" /> Quantum Readiness (ML-DSA)
+            <CommandShortcut>post-quantum</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('security')} className="gap-2">
             <UserCircle className="h-4 w-4 text-primary" /> Sessions & credentials
