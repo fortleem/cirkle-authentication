@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
   CheckCircle2,
@@ -63,12 +64,19 @@ export function SsoConsentModal({
   }, [app, user])
 
   const allMet = checks.length > 0 && checks.every((c) => c.met)
+  const [stepUpRequired, setStepUpRequired] = useState(false)
+  const [stepUpPassword, setStepUpPassword] = useState('')
+  const [stepUpPending, setStepUpPending] = useState(false)
+  const [stepUpToken, setStepUpToken] = useState<string | null>(null)
 
   // Reset state when the modal is closed or app changes
   useEffect(() => {
     if (open) {
       setResult(null)
       setMissing(null)
+      setStepUpRequired(false)
+      setStepUpPassword('')
+      setStepUpToken(null)
     }
   }, [open, app?.id])
 
@@ -77,28 +85,50 @@ export function SsoConsentModal({
   const needsBusiness = app.requirements.businessRequired || app.requirements.identityType === 'business'
   const activeBusiness = businesses.find((b) => b.id === activeBusinessId)
 
-  async function authorize() {
+  async function authorize(token?: string) {
     if (!app) return
     setPending(true)
     setMissing(null)
     try {
-      const opts = needsBusiness ? { businessId: activeBusinessId ?? undefined } : {}
+      const opts = {
+        ...(needsBusiness ? { businessId: activeBusinessId ?? undefined } : {}),
+        ...(token ? { stepUpToken: token } : {}),
+      }
       const res = await api.authorizeApp(app.id, opts)
       setResult(res)
       onAuthorized?.(app)
       toast.success(`Access granted to ${app.name}`)
     } catch (err) {
-      if (isRequirementsMissing(err)) {
-        const data = (err as ApiError).data as { missing?: RequirementCheck[]; missingBusiness?: boolean }
+      const apiErr = err as ApiError
+      if (isRequirementsMissing(apiErr)) {
+        const data = apiErr.data as { missing?: RequirementCheck[]; missingBusiness?: boolean }
         setMissing(data.missing ?? [])
         if (data.missingBusiness) {
           toast.error('A verified business profile is required for this app')
         }
+      } else if (apiErr.status === 422 && (apiErr.data as { stepUpRequired?: boolean }).stepUpRequired) {
+        setStepUpRequired(true)
+        toast.info('High-risk action — re-enter your password to continue')
       } else {
         toast.error(err instanceof Error ? err.message : 'Authorization failed')
       }
     } finally {
       setPending(false)
+    }
+  }
+
+  async function performStepUp() {
+    if (!app || !stepUpPassword) return
+    setStepUpPending(true)
+    try {
+      const r = await api.stepUp(stepUpPassword, `authorize:${app.slug}`)
+      setStepUpToken(r.stepUpToken)
+      toast.success('Re-authenticated — authorizing…')
+      await authorize(r.stepUpToken)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Step-up failed')
+    } finally {
+      setStepUpPending(false)
     }
   }
 
@@ -289,10 +319,35 @@ export function SsoConsentModal({
             </>
           ) : showMissingBlock ? (
             <Button variant="outline" onClick={close}>Close</Button>
+          ) : stepUpRequired ? (
+            <>
+              <div className="flex w-full flex-col gap-2">
+                <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-2 text-xs text-amber-700 dark:text-amber-300">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                  <span>High-risk action — re-enter your password to confirm.</span>
+                </div>
+                <Input
+                  type="password"
+                  placeholder="Your password"
+                  value={stepUpPassword}
+                  onChange={(e) => setStepUpPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && performStepUp()}
+                  className="w-full"
+                  autoFocus
+                />
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setStepUpRequired(false)} disabled={stepUpPending}>Cancel</Button>
+                  <Button size="sm" onClick={performStepUp} disabled={stepUpPending || !stepUpPassword} className="btn-gold gap-1.5 border-0">
+                    {stepUpPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                    {stepUpPending ? 'Verifying…' : 'Re-authenticate'}
+                  </Button>
+                </div>
+              </div>
+            </>
           ) : (
             <>
               <Button variant="outline" onClick={close} disabled={pending}>Cancel</Button>
-              <Button onClick={authorize} disabled={pending || !allMet} className="gap-2">
+              <Button onClick={() => authorize()} disabled={pending || !allMet} className="gap-2">
                 {pending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {pending ? 'Authorizing…' : `Authorize ${app.name}`}
               </Button>

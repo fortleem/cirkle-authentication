@@ -94,6 +94,7 @@ export function formatActionLabel(action: string): string {
     'recovery.reconstructed': 'Account recovered (Shamir SSS)',
     'emergency.lockdown': 'Emergency lockdown activated',
     'emergency.unlock': 'Emergency unlock — identity restored',
+    'auth.stepup': 'Step-up re-authentication',
   }
   return map[action] ?? action.replace(/\./g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }

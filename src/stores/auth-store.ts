@@ -55,6 +55,7 @@ export type DashboardTab =
   | 'atlas'
   | 'apps'
   | 'identity'
+  | 'idcard'
   | 'guardians'
   | 'business'
   | 'brain'

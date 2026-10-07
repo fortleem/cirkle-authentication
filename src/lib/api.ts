@@ -382,6 +382,16 @@ export const api = {
     return parseResponse(res)
   },
 
+  // Step-up authentication (re-auth for high-risk actions)
+  async stepUp(password: string, action: string): Promise<{ ok: boolean; stepUpToken: string; expiresAt: string }> {
+    const res = await fetch('/api/auth/step-up', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action }),
+    })
+    return parseResponse(res)
+  },
+
   // Emergency lockdown
   async emergencyLockdown(): Promise<{ ok: boolean; locked: boolean; message: string }> {
     const res = await fetch('/api/emergency/lockdown', { method: 'POST' })

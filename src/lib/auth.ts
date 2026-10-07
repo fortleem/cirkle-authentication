@@ -52,4 +52,18 @@ export function getSessionExpiry(): Date {
   return new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000)
 }
 
+/**
+ * Adaptive session expiry — risk-aware. High-risk sessions expire faster.
+ * - risk >= 65 (high): 1 hour
+ * - risk >= 45 (elevated): 1 day
+ * - risk >= 25 (moderate): 7 days
+ * - risk < 25 (low): 30 days (default)
+ */
+export function getAdaptiveSessionExpiry(riskScore: number): Date {
+  const HOUR = 60 * 60 * 1000
+  const DAY = 24 * HOUR
+  const ms = riskScore >= 65 ? HOUR : riskScore >= 45 ? DAY : riskScore >= 25 ? 7 * DAY : SESSION_DURATION_DAYS * DAY
+  return new Date(Date.now() + ms)
+}
+
 export { SESSION_DURATION_DAYS }

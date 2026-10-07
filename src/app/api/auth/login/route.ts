@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { verifyPassword, createSessionToken, getSessionExpiry } from '@/lib/auth'
+import { verifyPassword, createSessionToken, getSessionExpiry, getAdaptiveSessionExpiry } from '@/lib/auth'
+import { computeRiskScore } from '@/lib/risk-engine'
 import { setSessionCookie, getClientIp, getUserAgent, recordAudit } from '@/lib/session'
 
 const LoginSchema = z.object({
@@ -40,13 +41,29 @@ export async function POST(req: NextRequest) {
     }
 
     const token = createSessionToken({ userId: user.id, email: user.email, name: user.name, role: user.role })
+    // Adaptive session expiry — risk-aware
+    const loginIp = (getClientIp(req) || '').replace(/^::ffff:/, '')
+    const recentLogs = await db.auditLog.findMany({
+      where: { userId: user.id, createdAt: { gt: new Date(Date.now() - 60 * 60 * 1000) } },
+      select: { ip: true },
+    })
+    const knownIps = Array.from(new Set(recentLogs.map((l) => (l.ip ?? '').replace(/^::ffff:/, '')).filter(Boolean)))
+    const loginRisk = computeRiskScore({
+      action: 'session.login',
+      ip: loginIp,
+      knownIps,
+      sessionAgeMs: 0,
+      recentFailures: 0,
+      twoFactorEnabled: user.twoFactorEnabled,
+      hasPasskey: (await db.passkey.count({ where: { userId: user.id } })) > 0,
+    })
     await db.session.create({
       data: {
         userId: user.id,
         token,
         ip: getClientIp(req),
         userAgent: getUserAgent(req),
-        expiresAt: getSessionExpiry(),
+        expiresAt: getAdaptiveSessionExpiry(loginRisk.score),
       },
     })
     await setSessionCookie(token)

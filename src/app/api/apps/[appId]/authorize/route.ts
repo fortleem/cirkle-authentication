@@ -4,11 +4,14 @@ import { db } from '@/lib/db'
 import { getCurrentUser, unauthorized, getClientIp, getUserAgent, recordAudit } from '@/lib/session'
 import { checkRequirements, type AppRequirements, type UserVerificationState } from '@/lib/requirements'
 import { dispatchEvent, EVENTS } from '@/lib/inngest'
+import { computeRiskScore } from '@/lib/risk-engine'
+import { verifySessionToken } from '@/lib/auth'
 
 const AuthorizeSchema = z.object({
   scopes: z.string().optional(),
   businessId: z.string().optional(),
   contextType: z.enum(['personal', 'business']).optional(),
+  stepUpToken: z.string().optional(),
 })
 
 export async function POST(
@@ -71,6 +74,50 @@ export async function POST(
       requirements: checks,
       missing: checks.filter((c) => !c.met),
     }, { status: 422 })
+  }
+
+  // ── Adaptive Risk Engine: step-up auth enforcement ──
+  // Compute the risk score for this authorization action. If it exceeds the
+  // step-up threshold, require a fresh re-auth (stepUpToken) before proceeding.
+  const ip = getClientIp(req)
+  const normalizedIp = (ip || '').replace(/^::ffff:/, '')
+  const recentLogs = await db.auditLog.findMany({
+    where: { userId: user.id, createdAt: { gt: new Date(Date.now() - 60 * 60 * 1000) } },
+    select: { ip: true, action: true },
+  })
+  const knownIps = Array.from(new Set(recentLogs.map((l) => (l.ip ?? '').replace(/^::ffff:/, '')).filter(Boolean)))
+  const recentFailures = recentLogs.filter((l) => l.action === 'session.login' && false).length // no failed-login tracking yet; 0
+  const currentSession = await db.session.findFirst({
+    where: { userId: user.id, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: 'desc' },
+  })
+  const sessionAgeMs = currentSession ? Date.now() - currentSession.createdAt.getTime() : 0
+
+  const risk = computeRiskScore({
+    action: 'app.authorize',
+    ip: normalizedIp,
+    knownIps,
+    sessionAgeMs,
+    recentFailures,
+    twoFactorEnabled: user.twoFactorEnabled,
+    hasPasskey: user.hasPasskey,
+  })
+
+  if (risk.stepUpRequired && !parsed.data.stepUpToken) {
+    return NextResponse.json({
+      error: 'Step-up authentication required',
+      stepUpRequired: true,
+      riskScore: risk.score,
+      riskLevel: risk.level,
+    }, { status: 422 })
+  }
+
+  // If a stepUpToken was provided, verify it (it's a short-lived JWT)
+  if (parsed.data.stepUpToken) {
+    const payload = verifySessionToken(parsed.data.stepUpToken)
+    if (!payload || payload.userId !== user.id) {
+      return NextResponse.json({ error: 'Invalid or expired step-up token' }, { status: 403 })
+    }
   }
 
   const scopes = parsed.data.scopes || app.requiredScopes
