@@ -3,6 +3,8 @@ import { Fraunces, Inter, Tajawal } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ServiceWorkerRegistrar } from "@/components/cirkle/sw-registrar";
+import { QueryProvider } from "@/providers/query-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -36,8 +38,16 @@ export const metadata: Metadata = {
     "OAuth",
     "Cirkle-Search",
     "Identity",
+    "Passkeys",
+    "Post-Quantum",
   ],
   authors: [{ name: "Cirkle" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Cirkle",
+  },
   openGraph: {
     title: "Cirkle Authentication",
     description: "One identity for every Cirkle app.",
@@ -57,8 +67,11 @@ export default function RootLayout({
         className={`${inter.variable} ${fraunces.variable} ${tajawal.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider>
-          {children}
-          <Toaster richColors position="top-center" />
+          <QueryProvider>
+            {children}
+            <ServiceWorkerRegistrar />
+            <Toaster richColors position="top-center" />
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

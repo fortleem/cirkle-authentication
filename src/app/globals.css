@@ -390,7 +390,28 @@
 @media (prefers-reduced-motion: reduce) {
   .cirkle-spin-trefoil,
   .animate-pulse-ring,
-  .signal-dot::after {
+  .signal-dot::after,
+  .cirkle-constellation-spin {
     animation: none;
   }
+}
+
+/* ── View Transitions API — native cross-fade on tab switches ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

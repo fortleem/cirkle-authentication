@@ -42,6 +42,7 @@ import { CirkleLogo } from '@/components/cirkle/logo'
 import { IdentityDNA } from '@/components/cirkle/identity-dna'
 import { ThemeToggle } from '@/components/cirkle/theme-toggle'
 import { CommandPalette } from '@/components/cirkle/command-palette'
+import { startViewTransition } from '@/lib/view-transitions'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
@@ -251,7 +252,7 @@ export function DashboardView() {
               return (
                 <button
                   key={item.key}
-                  onClick={() => setDashboardTab(item.key)}
+                  onClick={() => startViewTransition(() => setDashboardTab(item.key))}
                   className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
                     active
                       ? 'bg-primary/10 font-medium text-primary'

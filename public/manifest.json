@@ -1,0 +1,25 @@
+{
+  "name": "Cirkle Authentication",
+  "short_name": "Cirkle",
+  "description": "One identity. Every Cirkle app. The single sign-on layer for the Cirkle ecosystem — passkeys, post-quantum attestation, adaptive risk, and a breathtaking identity constellation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1A1A14",
+  "theme_color": "#1A4A5A",
+  "orientation": "portrait-primary",
+  "categories": ["security", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Dashboard", "url": "/?view=dashboard" },
+    { "name": "Security Center", "url": "/?view=dashboard&tab=identity" },
+    { "name": "Circle Brain", "url": "/?view=dashboard&tab=brain" }
+  ]
+}
