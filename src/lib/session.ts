@@ -19,6 +19,7 @@ export interface AuthUser {
   hasRecoveryCodes: boolean
   hasPasskey: boolean
   onboardingComplete: boolean
+  locked: boolean
   phone: string | null
   avatarUrl: string | null
   lastLoginAt: Date | null
@@ -76,6 +77,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       businessVerified: true,
       recoveryCodesHash: true,
       onboardingComplete: true,
+      locked: true,
       phone: true,
       avatarUrl: true,
       lastLoginAt: true,

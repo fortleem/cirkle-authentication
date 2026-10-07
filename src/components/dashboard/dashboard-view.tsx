@@ -22,6 +22,8 @@ import {
   Radar,
   Users,
   Atom,
+  Siren,
+  TrendingUp,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -56,6 +58,8 @@ import { BrainPanel } from './brain-panel'
 import { PrivacyPanel } from './privacy-panel'
 import { TimelinePanel } from './timeline-panel'
 import { QuantumReadinessPanel } from './quantum-readiness-panel'
+import { EmergencyPanel } from './emergency-panel'
+import { CopilotPanel } from './copilot-panel'
 import { SecurityPanel } from './security-panel'
 import { ActivityPanel } from './activity-panel'
 import { OnboardingWizard } from './onboarding-wizard'
@@ -70,9 +74,11 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'guardians', label: 'Guardians', icon: Users, description: 'M-of-N social recovery (Shamir SSS)' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
   { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
+  { key: 'copilot', label: 'AI Co-pilot', icon: Sparkles, description: 'AI-driven revocation recommendations' },
   { key: 'privacy', label: 'Privacy', icon: Eye, description: 'What can each app see?' },
-  { key: 'timeline', label: 'Timeline', icon: Sparkles, description: 'Identity milestone journey' },
+  { key: 'timeline', label: 'Timeline', icon: TrendingUp, description: 'Identity milestone journey' },
   { key: 'quantum', label: 'Quantum', icon: Atom, description: 'Post-quantum readiness + ML-DSA attestation' },
+  { key: 'emergency', label: 'Emergency', icon: Siren, description: 'Panic button — lockdown everything' },
   { key: 'security', label: 'Sessions', icon: UserCircle, description: 'Active sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
@@ -339,6 +345,8 @@ export function DashboardView() {
               {dashboardTab === 'privacy' && <PrivacyPanel />}
               {dashboardTab === 'timeline' && <TimelinePanel />}
               {dashboardTab === 'quantum' && <QuantumReadinessPanel />}
+              {dashboardTab === 'emergency' && <EmergencyPanel />}
+              {dashboardTab === 'copilot' && <CopilotPanel />}
               {dashboardTab === 'security' && <SecurityPanel />}
               {dashboardTab === 'activity' && <ActivityPanel />}
             </motion.div>

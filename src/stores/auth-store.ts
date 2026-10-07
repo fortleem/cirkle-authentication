@@ -16,6 +16,7 @@ export interface AuthUser {
   hasRecoveryCodes: boolean
   hasPasskey: boolean
   onboardingComplete: boolean
+  locked: boolean
   phone: string | null
   avatarUrl: string | null
   createdAt: string
@@ -60,6 +61,8 @@ export type DashboardTab =
   | 'privacy'
   | 'timeline'
   | 'quantum'
+  | 'emergency'
+  | 'copilot'
   | 'security'
   | 'activity'
 

@@ -34,6 +34,7 @@ import {
   Radar,
   Users,
   Atom,
+  Siren,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -136,6 +137,14 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('quantum')} className="gap-2">
             <Atom className="h-4 w-4 text-primary" /> Quantum Readiness (ML-DSA)
             <CommandShortcut>post-quantum</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('copilot')} className="gap-2">
+            <Sparkles className="h-4 w-4 text-primary" /> AI Security Co-pilot
+            <CommandShortcut>recommend</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('emergency')} className="gap-2">
+            <Siren className="h-4 w-4 text-rose-600 dark:text-rose-400" /> Emergency Lockdown
+            <CommandShortcut>panic</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('security')} className="gap-2">
             <UserCircle className="h-4 w-4 text-primary" /> Sessions & credentials

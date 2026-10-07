@@ -381,4 +381,18 @@ export const api = {
     const res = await fetch('/api/pq/verify', { cache: 'no-store' })
     return parseResponse(res)
   },
+
+  // Emergency lockdown
+  async emergencyLockdown(): Promise<{ ok: boolean; locked: boolean; message: string }> {
+    const res = await fetch('/api/emergency/lockdown', { method: 'POST' })
+    return parseResponse(res)
+  },
+  async emergencyUnlock(identifier: string, password: string): Promise<{ ok: boolean; user: AuthUser }> {
+    const res = await fetch('/api/emergency/unlock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password }),
+    })
+    return parseResponse(res)
+  },
 }

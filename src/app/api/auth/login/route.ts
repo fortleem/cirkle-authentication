@@ -34,6 +34,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
     }
 
+    // Emergency lockdown — deny sign-in while locked
+    if (user.locked) {
+      return NextResponse.json({ error: 'This Cirkle identity is under emergency lockdown. Use emergency unlock to re-activate.', locked: true }, { status: 423 })
+    }
+
     const token = createSessionToken({ userId: user.id, email: user.email, name: user.name, role: user.role })
     await db.session.create({
       data: {

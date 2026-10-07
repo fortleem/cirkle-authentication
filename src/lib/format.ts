@@ -92,6 +92,8 @@ export function formatActionLabel(action: string): string {
     'pq.attestation.generated': 'Post-quantum attestation issued',
     'recovery.setup': 'Social recovery configured',
     'recovery.reconstructed': 'Account recovered (Shamir SSS)',
+    'emergency.lockdown': 'Emergency lockdown activated',
+    'emergency.unlock': 'Emergency unlock — identity restored',
   }
   return map[action] ?? action.replace(/\./g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }

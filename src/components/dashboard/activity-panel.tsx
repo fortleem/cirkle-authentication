@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText, Sparkles, Fingerprint, CheckCircle2 } from 'lucide-react'
+import { Loader2, Activity, ShieldCheck, LogIn, LogOut, Plug, Unplug, KeyRound, User as UserIcon, Phone, BadgeCheck, Building2, FileText, Sparkles, Fingerprint, CheckCircle2, Siren } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { api, type AuditEntry } from '@/lib/api'
