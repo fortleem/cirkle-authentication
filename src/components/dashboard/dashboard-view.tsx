@@ -26,6 +26,7 @@ import {
   TrendingUp,
   CreditCard,
   Award,
+  Rocket,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -50,6 +51,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Footer } from '@/components/cirkle/footer'
 import { OverviewPanel } from './overview-panel'
+import { LaunchpadPanel } from './launchpad-panel'
 import { ConstellationPanel } from './constellation-panel'
 import { RiskRadarPanel } from './risk-radar-panel'
 import { AuthAtlasPanel } from './auth-atlas-panel'
@@ -71,6 +73,7 @@ import { OnboardingWizard } from './onboarding-wizard'
 
 const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: string }[] = [
   { key: 'overview', label: 'Overview', icon: LayoutDashboard, description: 'Your identity at a glance' },
+  { key: 'launchpad', label: 'Launchpad', icon: Rocket, description: 'One-tap gateway to all Cirkle apps + bundles' },
   { key: 'constellation', label: 'Constellation', icon: Orbit, description: 'Orbital identity map (breathtaking)' },
   { key: 'risk', label: 'Risk Radar', icon: Radar, description: 'Adaptive risk scoring + step-up' },
   { key: 'atlas', label: 'Auth Atlas', icon: BookOpen, description: 'Auth methods × platform matrix' },
@@ -341,6 +344,7 @@ export function DashboardView() {
               transition={{ duration: 0.18 }}
             >
               {dashboardTab === 'overview' && <OverviewPanel />}
+              {dashboardTab === 'launchpad' && <LaunchpadPanel />}
               {dashboardTab === 'constellation' && <ConstellationPanel />}
               {dashboardTab === 'risk' && <RiskRadarPanel />}
               {dashboardTab === 'atlas' && <AuthAtlasPanel />}

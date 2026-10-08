@@ -36,6 +36,7 @@ import {
   Atom,
   Siren,
   Award,
+  Rocket,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -94,6 +95,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('overview')} className="gap-2">
             <LayoutDashboard className="h-4 w-4 text-primary" /> Overview
             <CommandShortcut>dashboard</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('launchpad')} className="gap-2">
+            <Rocket className="h-4 w-4 text-primary" /> Launchpad (app bundles)
+            <CommandShortcut>launch</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('constellation')} className="gap-2">
             <Orbit className="h-4 w-4 text-primary" /> Identity Constellation
