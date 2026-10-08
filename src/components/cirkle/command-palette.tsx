@@ -35,6 +35,7 @@ import {
   Users,
   Atom,
   Siren,
+  Award,
 } from 'lucide-react'
 import { useAuthStore, type DashboardTab } from '@/stores/auth-store'
 import { api } from '@/lib/api'
@@ -101,6 +102,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandItem onSelect={() => go('atlas')} className="gap-2">
             <BookOpen className="h-4 w-4 text-primary" /> Auth Atlas (methods × platforms)
             <CommandShortcut>catalog</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => go('credentials')} className="gap-2">
+            <Award className="h-4 w-4 text-primary" /> Verifiable Credentials
+            <CommandShortcut>PQ-signed</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go('risk')} className="gap-2">
             <Radar className="h-4 w-4 text-primary" /> Risk Radar (adaptive scoring)

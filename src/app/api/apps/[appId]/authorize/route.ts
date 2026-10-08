@@ -12,6 +12,7 @@ const AuthorizeSchema = z.object({
   businessId: z.string().optional(),
   contextType: z.enum(['personal', 'business']).optional(),
   stepUpToken: z.string().optional(),
+  duration: z.enum(['1h', '1d', '7d', 'permanent']).optional(),
 })
 
 export async function POST(
@@ -122,11 +123,14 @@ export async function POST(
 
   const scopes = parsed.data.scopes || app.requiredScopes
   const contextType = businessId ? 'business' : parsed.data.contextType || 'personal'
+  // Time-locked authorization: compute the expiry from the duration
+  const duration = parsed.data.duration || 'permanent'
+  const expiresAt = duration === 'permanent' ? null : new Date(Date.now() + (duration === '1h' ? 3600000 : duration === '1d' ? 86400000 : 7 * 86400000))
 
   await db.userAppAccess.upsert({
     where: { userId_appId: { userId: user.id, appId } },
-    update: { scopes, grantedAt: new Date(), contextType, businessId },
-    create: { userId: user.id, appId, scopes, grantedAt: new Date(), contextType, businessId },
+    update: { scopes, grantedAt: new Date(), contextType, businessId, expiresAt },
+    create: { userId: user.id, appId, scopes, grantedAt: new Date(), contextType, businessId, expiresAt },
   })
 
   const ip = getClientIp(req)

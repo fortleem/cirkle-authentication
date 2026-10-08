@@ -56,6 +56,7 @@ export type DashboardTab =
   | 'apps'
   | 'identity'
   | 'idcard'
+  | 'credentials'
   | 'guardians'
   | 'business'
   | 'brain'

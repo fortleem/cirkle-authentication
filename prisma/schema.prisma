@@ -50,6 +50,26 @@ model User {
   businessMemberships UserBusiness[]
   passkeys           Passkey[]
   guardians          Guardian[]
+  credentials        Credential[]
+}
+
+// Verifiable Credentials (W3C VC-style) — signed with the user's PQ
+// attestation key (ML-DSA-65). The user holds + presents these to prove
+// verified attributes without revealing personal data.
+model Credential {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // e.g. 'CirkleEmailVerification', 'CirkleKYCVerified'
+  subject     String   // JSON: { username, attribute, value, verifiedAt }
+  issuer      String   @default("Cirkle Authentication")
+  signature   String   // base64 ML-DSA-65 lattice signature
+  algorithm   String   @default("ML-DSA-65 / FIPS-204")
+  message     String   // the signed binding message
+  createdAt   DateTime @default(now())
+  revokedAt   DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Social Recovery (M-of-N Shamir's Secret Sharing)
@@ -160,6 +180,8 @@ model UserAppAccess {
   // Context: personal vs. business (for business-required apps)
   contextType String   @default("personal")  // personal | business
   businessId  String?
+  // Time-locked authorization: null = permanent; a date = auto-expires
+  expiresAt   DateTime?
   grantedAt   DateTime @default(now())
   lastUsedAt  DateTime?
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)

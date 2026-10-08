@@ -13,6 +13,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   CheckCircle2,
   ExternalLink,
   Loader2,
@@ -21,6 +28,7 @@ import {
   AlertCircle,
   Building2,
   KeyRound,
+  Clock,
 } from 'lucide-react'
 import type { EcosystemApp, RequirementCheck } from '@/lib/api'
 import { getAppIcon } from '@/components/cirkle/app-icons'
@@ -68,6 +76,7 @@ export function SsoConsentModal({
   const [stepUpPassword, setStepUpPassword] = useState('')
   const [stepUpPending, setStepUpPending] = useState(false)
   const [stepUpToken, setStepUpToken] = useState<string | null>(null)
+  const [duration, setDuration] = useState<'1h' | '1d' | '7d' | 'permanent'>('permanent')
 
   // Reset state when the modal is closed or app changes
   useEffect(() => {
@@ -77,6 +86,7 @@ export function SsoConsentModal({
       setStepUpRequired(false)
       setStepUpPassword('')
       setStepUpToken(null)
+      setDuration('permanent')
     }
   }, [open, app?.id])
 
@@ -93,6 +103,7 @@ export function SsoConsentModal({
       const opts = {
         ...(needsBusiness ? { businessId: activeBusinessId ?? undefined } : {}),
         ...(token ? { stepUpToken: token } : {}),
+        duration,
       }
       const res = await api.authorizeApp(app.id, opts)
       setResult(res)
@@ -292,6 +303,23 @@ export function SsoConsentModal({
                   )}
                 </div>
               )}
+
+              {/* Time-locked authorization duration */}
+              <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
+                <div className="mb-1.5 flex items-center gap-1.5 text-xs font-medium">
+                  <Clock className="h-3.5 w-3.5 text-primary" /> Authorization duration
+                </div>
+                <Select value={duration} onValueChange={(v) => setDuration(v as typeof duration)}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1h">1 hour (time-locked)</SelectItem>
+                    <SelectItem value="1d">1 day (time-locked)</SelectItem>
+                    <SelectItem value="7d">7 days (time-locked)</SelectItem>
+                    <SelectItem value="permanent">Permanent (until revoked)</SelectItem>
+                  </SelectContent>
+                </Select>
+                {duration !== 'permanent' && <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400">Auto-expires — access is revoked at the end of the duration.</p>}
+              </div>
 
               {/* Scopes */}
               <div className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">

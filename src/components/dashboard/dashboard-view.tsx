@@ -25,6 +25,7 @@ import {
   Siren,
   TrendingUp,
   CreditCard,
+  Award,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -61,6 +62,7 @@ import { PrivacyPanel } from './privacy-panel'
 import { TimelinePanel } from './timeline-panel'
 import { QuantumReadinessPanel } from './quantum-readiness-panel'
 import { IdentityCardPanel } from './identity-card-panel'
+import { CredentialsPanel } from './credentials-panel'
 import { EmergencyPanel } from './emergency-panel'
 import { CopilotPanel } from './copilot-panel'
 import { SecurityPanel } from './security-panel'
@@ -75,6 +77,7 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'apps', label: 'Connected apps', icon: Plug, description: 'Manage app authorizations' },
   { key: 'identity', label: 'Security Center', icon: ShieldCheck, description: 'Posture, passkeys, recovery, 2FA' },
   { key: 'idcard', label: 'Identity Card', icon: CreditCard, description: 'Your portable digital passport' },
+  { key: 'credentials', label: 'Credentials', icon: Award, description: 'PQ-signed verifiable credentials' },
   { key: 'guardians', label: 'Guardians', icon: Users, description: 'M-of-N social recovery (Shamir SSS)' },
   { key: 'business', label: 'Business', icon: Building2, description: 'Personal + business profiles' },
   { key: 'brain', label: 'Circle Brain', icon: Brain, description: 'AI consensus mesh' },
@@ -344,6 +347,7 @@ export function DashboardView() {
               {dashboardTab === 'apps' && <AppsPanel />}
               {dashboardTab === 'identity' && <IdentityPanel />}
               {dashboardTab === 'idcard' && <IdentityCardPanel />}
+              {dashboardTab === 'credentials' && <CredentialsPanel />}
               {dashboardTab === 'guardians' && <GuardiansPanel />}
               {dashboardTab === 'business' && <BusinessPanel />}
               {dashboardTab === 'brain' && <BrainPanel />}

@@ -186,7 +186,7 @@ export const api = {
     return parseResponse(res)
   },
 
-  async authorizeApp(appId: string, opts?: { scopes?: string; businessId?: string; contextType?: 'personal' | 'business' }): Promise<AuthorizeResponse> {
+  async authorizeApp(appId: string, opts?: { scopes?: string; businessId?: string; contextType?: 'personal' | 'business'; stepUpToken?: string; duration?: '1h' | '1d' | '7d' | 'permanent' }): Promise<AuthorizeResponse> {
     const res = await fetch(`/api/apps/${appId}/authorize`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -403,6 +403,24 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier, password }),
     })
+    return parseResponse(res)
+  },
+
+  // Verifiable Credentials
+  async issueCredential(type: string): Promise<{ ok: boolean; credential: any }> {
+    const res = await fetch('/api/credentials/issue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type }),
+    })
+    return parseResponse(res)
+  },
+  async listCredentials(): Promise<{ credentials: any[] }> {
+    const res = await fetch('/api/credentials/issue', { cache: 'no-store' })
+    return parseResponse(res)
+  },
+  async verifyCredential(id: string): Promise<any> {
+    const res = await fetch(`/api/credentials/${id}/verify`, { cache: 'no-store' })
     return parseResponse(res)
   },
 }
