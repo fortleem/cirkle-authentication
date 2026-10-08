@@ -1,6 +1,9 @@
 // App Bundles — pre-configured groups of related Cirkle ecosystem apps.
 // One-click "Authorize all" prevents the fragmentation of authorizing apps
-// one by one. Each bundle surfaces the combined (strictest) requirements.
+// one by one. Each bundle's combined requirement is DYNAMICALLY COMPUTED
+// from the actual apps' requirement profiles (not hardcoded).
+
+import type { EcosystemApp } from '@/lib/api'
 
 export interface AppBundle {
   id: string
@@ -9,7 +12,6 @@ export interface AppBundle {
   icon: string // lucide icon name
   color: string
   appSlugs: string[]
-  combinedRequirement: string // human-readable summary of the strictest requirements
 }
 
 export const APP_BUNDLES: AppBundle[] = [
@@ -20,7 +22,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'Sparkles',
     color: '#1A4A5A',
     appSlugs: ['cirkle-search', 'cirkle-superapp', 'cirkle-mail'],
-    combinedRequirement: 'Email + Phone (Enhanced)',
   },
   {
     id: 'healthcare',
@@ -29,7 +30,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'HeartPulse',
     color: '#dc2626',
     appSlugs: ['wedjat', 'wedjat-brainai', 'wedjatrsm'],
-    combinedRequirement: 'Email + Phone + KYC + 2FA (Strict)',
   },
   {
     id: 'finance',
@@ -38,7 +38,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'Coins',
     color: '#b8860b',
     appSlugs: ['mtq', 'mtq-sigma'],
-    combinedRequirement: 'Email + Phone + 2FA + Business (Strict+Business)',
   },
   {
     id: 'legal',
@@ -47,7 +46,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'Scale',
     color: '#c9a227',
     appSlugs: ['judge-smart', 'egycourt'],
-    combinedRequirement: 'Email + Phone + 2FA (Enhanced)',
   },
   {
     id: 'maritime',
@@ -56,7 +54,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'Ship',
     color: '#c19a2b',
     appSlugs: ['sgtx', 'sgtx-fable'],
-    combinedRequirement: 'Email + Phone + 2FA + Business (Enhanced+Business)',
   },
   {
     id: 'media',
@@ -65,7 +62,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'PlayCircle',
     color: '#cf8a1a',
     appSlugs: ['mashahd', 'aurienta'],
-    combinedRequirement: 'Email (Basic)',
   },
   {
     id: 'connectivity',
@@ -74,7 +70,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'Wifi',
     color: '#daa520',
     appSlugs: ['cirkle-mail', 'wasl'],
-    combinedRequirement: 'Email + Phone (Enhanced)',
   },
   {
     id: 'verify',
@@ -83,7 +78,6 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'ShieldCheck',
     color: '#b8860b',
     appSlugs: ['verify'],
-    combinedRequirement: 'Email + Phone + KYC + 2FA (Strict)',
   },
   {
     id: 'trade',
@@ -92,9 +86,87 @@ export const APP_BUNDLES: AppBundle[] = [
     icon: 'Globe',
     color: '#c19a2b',
     appSlugs: ['olympex'],
-    combinedRequirement: 'Email + Phone + 2FA + Business (Enhanced+Business)',
   },
 ]
+
+/**
+ * DYNAMICALLY COMPUTE the combined (strictest) requirement for a set of apps.
+ * Each app carries its own requirement profile (identityType, verificationLevel,
+ * twoFactorRequired, businessRequired). The bundle picks the strictest combination:
+ *
+ * - verificationLevel: the MAX across all apps (basic < enhanced < strict)
+ * - twoFactorRequired: true if ANY app requires it
+ * - businessRequired: true if ANY app requires it OR any app's identityType is 'business'
+ * - identityType: 'business' if any app is business-only, else 'either' if any is either, else 'personal'
+ *
+ * Returns a human-readable string + a structured breakdown.
+ */
+export interface CombinedRequirement {
+  label: string // human-readable summary
+  verificationLevel: 'basic' | 'enhanced' | 'strict'
+  twoFactorRequired: boolean
+  businessRequired: boolean
+  identityType: 'personal' | 'business' | 'either'
+  parts: string[] // individual requirement parts (for badges)
+}
+
+export function computeCombinedRequirement(apps: EcosystemApp[]): CombinedRequirement {
+  if (apps.length === 0) {
+    return {
+      label: 'No apps',
+      verificationLevel: 'basic',
+      twoFactorRequired: false,
+      businessRequired: false,
+      identityType: 'either',
+      parts: [],
+    }
+  }
+
+  // Pick the strictest verification level (basic < enhanced < strict)
+  const levelRank = { basic: 0, enhanced: 1, strict: 2 }
+  let strictestLevel: 'basic' | 'enhanced' | 'strict' = 'basic'
+  let twoFactorRequired = false
+  let businessRequired = false
+  let identityType: 'personal' | 'business' | 'either' = 'personal'
+
+  for (const app of apps) {
+    const lvl = app.requirements.verificationLevel
+    if (levelRank[lvl] > levelRank[strictestLevel]) {
+      strictestLevel = lvl
+    }
+    if (app.requirements.twoFactorRequired) twoFactorRequired = true
+    if (app.requirements.businessRequired) businessRequired = true
+    if (app.requirements.identityType === 'business') {
+      identityType = 'business'
+      businessRequired = true
+    } else if (app.requirements.identityType === 'either' && identityType !== 'business') {
+      identityType = 'either'
+    }
+  }
+
+  // Build the human-readable parts
+  const parts: string[] = ['Email']
+  if (strictestLevel === 'enhanced' || strictestLevel === 'strict') parts.push('Phone')
+  if (strictestLevel === 'strict') parts.push('KYC')
+  if (twoFactorRequired) parts.push('2FA')
+  if (businessRequired) parts.push('Business')
+
+  const levelLabel = strictestLevel.charAt(0).toUpperCase() + strictestLevel.slice(1)
+  const extraLabels: string[] = []
+  if (twoFactorRequired) extraLabels.push('2FA')
+  if (businessRequired) extraLabels.push('Business')
+  const extra = extraLabels.length ? ` +${extraLabels.join('+')}` : ''
+  const label = `${parts.join(' + ')} (${levelLabel}${extra})`
+
+  return {
+    label,
+    verificationLevel: strictestLevel,
+    twoFactorRequired,
+    businessRequired,
+    identityType,
+    parts,
+  }
+}
 
 /** Get the bundle for an app slug (which bundle contains this app?). */
 export function bundleForApp(slug: string): AppBundle | undefined {

@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import { api, type EcosystemApp } from '@/lib/api'
 import { getAppIcon } from '@/components/cirkle/app-icons'
-import { APP_BUNDLES, type AppBundle } from '@/lib/app-bundles'
+import { APP_BUNDLES, computeCombinedRequirement, type AppBundle } from '@/lib/app-bundles'
 import { useAuthStore } from '@/stores/auth-store'
 import { formatRelativeTime } from '@/lib/format'
 import { CirkleMark } from '@/components/cirkle/logo'
@@ -127,7 +127,28 @@ export function LaunchpadPanel() {
                       </div>
                       <div>
                         <h3 className="font-semibold">{bundle.name}</h3>
-                        <p className="text-[10px] text-muted-foreground">{bundle.combinedRequirement}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {(() => {
+                            const req = computeCombinedRequirement(bundleApps)
+                            return (
+                              <span className="flex flex-wrap gap-1">
+                                {req.parts.map((p) => (
+                                  <span key={p} className={`rounded-full px-1.5 py-0 text-[9px] ${
+                                    p === 'KYC' ? 'border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                    p === '2FA' ? 'border border-primary/30 bg-primary/5 text-primary' :
+                                    p === 'Business' ? 'border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                    'border border-border/50 text-muted-foreground'
+                                  }`}>{p}</span>
+                                ))}
+                                <span className="ml-0.5 font-medium text-muted-foreground">
+                                  {req.verificationLevel.charAt(0).toUpperCase() + req.verificationLevel.slice(1)}
+                                  {req.twoFactorRequired && '+2FA'}
+                                  {req.businessRequired && '+Biz'}
+                                </span>
+                              </span>
+                            )
+                          })()}
+                        </p>
                       </div>
                     </div>
                     {allAuthorized && <CheckCircle2 className="h-4 w-4 text-primary" />}
