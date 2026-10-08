@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ServiceWorkerRegistrar } from "@/components/cirkle/sw-registrar";
 import { QueryProvider } from "@/providers/query-provider";
+import { AdaptiveThemeProvider } from "@/providers/adaptive-theme-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -68,9 +69,11 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <QueryProvider>
-            {children}
-            <ServiceWorkerRegistrar />
-            <Toaster richColors position="top-center" />
+            <AdaptiveThemeProvider>
+              {children}
+              <ServiceWorkerRegistrar />
+              <Toaster richColors position="top-center" />
+            </AdaptiveThemeProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>

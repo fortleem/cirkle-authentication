@@ -50,6 +50,7 @@ export type View =
 
 export type DashboardTab =
   | 'overview'
+  | 'health'
   | 'launchpad'
   | 'constellation'
   | 'risk'
