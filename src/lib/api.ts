@@ -423,4 +423,22 @@ export const api = {
     const res = await fetch(`/api/credentials/${id}/verify`, { cache: 'no-store' })
     return parseResponse(res)
   },
+
+  // API Keys
+  async listApiKeys(): Promise<{ keys: any[] }> {
+    const res = await fetch('/api/api-keys', { cache: 'no-store' })
+    return parseResponse(res)
+  },
+  async createApiKey(name: string, scopes: string): Promise<{ ok: boolean; key: string; id: string; name: string; prefix: string; scopes: string; createdAt: string }> {
+    const res = await fetch('/api/api-keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, scopes }),
+    })
+    return parseResponse(res)
+  },
+  async revokeApiKey(id: string): Promise<{ ok: boolean }> {
+    const res = await fetch(`/api/api-keys/${id}`, { method: 'DELETE' })
+    return parseResponse(res)
+  },
 }

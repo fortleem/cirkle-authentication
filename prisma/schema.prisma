@@ -51,6 +51,23 @@ model User {
   passkeys           Passkey[]
   guardians          Guardian[]
   credentials        Credential[]
+  apiKeys            ApiKey[]
+}
+
+// API Keys for programmatic identity access (developer integration)
+model ApiKey {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  hashedKey   String   @unique  // SHA-256 of the raw key (never store raw)
+  prefix      String   // first 8 chars for identification
+  scopes      String   @default("identity:read")
+  lastUsedAt  DateTime?
+  createdAt   DateTime @default(now())
+  revokedAt   DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Verifiable Credentials (W3C VC-style) — signed with the user's PQ

@@ -70,6 +70,7 @@ export type DashboardTab =
   | 'emergency'
   | 'copilot'
   | 'security'
+  | 'database'
   | 'activity'
 
 interface AuthState {

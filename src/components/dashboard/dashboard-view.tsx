@@ -30,6 +30,7 @@ import {
   HeartPulse,
   Fingerprint,
   Link2,
+  Database,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -74,6 +75,7 @@ import { CredentialsPanel } from './credentials-panel'
 import { EmergencyPanel } from './emergency-panel'
 import { CopilotPanel } from './copilot-panel'
 import { SecurityPanel } from './security-panel'
+import { DatabasePanel } from './database-panel'
 import { ActivityPanel } from './activity-panel'
 import { OnboardingWizard } from './onboarding-wizard'
 
@@ -99,6 +101,7 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'verifiable-audit', label: 'Audit Chain', icon: Link2, description: 'Tamper-evident Merkle audit log' },
   { key: 'emergency', label: 'Emergency', icon: Siren, description: 'Panic button — lockdown everything' },
   { key: 'security', label: 'Sessions', icon: UserCircle, description: 'Active sessions & credentials' },
+  { key: 'database', label: 'Database', icon: Database, description: 'Download backup + API keys' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
 ]
 
@@ -373,6 +376,7 @@ export function DashboardView() {
               {dashboardTab === 'emergency' && <EmergencyPanel />}
               {dashboardTab === 'copilot' && <CopilotPanel />}
               {dashboardTab === 'security' && <SecurityPanel />}
+              {dashboardTab === 'database' && <DatabasePanel />}
               {dashboardTab === 'activity' && <ActivityPanel />}
             </motion.div>
           </AnimatePresence>
