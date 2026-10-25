@@ -65,6 +65,8 @@ export type DashboardTab =
   | 'privacy'
   | 'timeline'
   | 'quantum'
+  | 'behavioral'
+  | 'verifiable-audit'
   | 'emergency'
   | 'copilot'
   | 'security'

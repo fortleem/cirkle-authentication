@@ -28,6 +28,8 @@ import {
   Award,
   Rocket,
   HeartPulse,
+  Fingerprint,
+  Link2,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -65,6 +67,8 @@ import { BrainPanel } from './brain-panel'
 import { PrivacyPanel } from './privacy-panel'
 import { TimelinePanel } from './timeline-panel'
 import { QuantumReadinessPanel } from './quantum-readiness-panel'
+import { BehavioralAuthPanel } from './behavioral-auth-panel'
+import { VerifiableAuditPanel } from './verifiable-audit-panel'
 import { IdentityCardPanel } from './identity-card-panel'
 import { CredentialsPanel } from './credentials-panel'
 import { EmergencyPanel } from './emergency-panel'
@@ -91,6 +95,8 @@ const NAV: { key: DashboardTab; label: string; icon: typeof Plug; description: s
   { key: 'privacy', label: 'Privacy', icon: Eye, description: 'What can each app see?' },
   { key: 'timeline', label: 'Timeline', icon: TrendingUp, description: 'Identity milestone journey' },
   { key: 'quantum', label: 'Quantum', icon: Atom, description: 'Post-quantum readiness + ML-DSA attestation' },
+  { key: 'behavioral', label: 'Behavioral', icon: Fingerprint, description: 'Continuous behavioral authentication (CBA)' },
+  { key: 'verifiable-audit', label: 'Audit Chain', icon: Link2, description: 'Tamper-evident Merkle audit log' },
   { key: 'emergency', label: 'Emergency', icon: Siren, description: 'Panic button — lockdown everything' },
   { key: 'security', label: 'Sessions', icon: UserCircle, description: 'Active sessions & credentials' },
   { key: 'activity', label: 'Activity', icon: Activity, description: 'Audit log of every event' },
@@ -362,6 +368,8 @@ export function DashboardView() {
               {dashboardTab === 'privacy' && <PrivacyPanel />}
               {dashboardTab === 'timeline' && <TimelinePanel />}
               {dashboardTab === 'quantum' && <QuantumReadinessPanel />}
+              {dashboardTab === 'behavioral' && <BehavioralAuthPanel />}
+              {dashboardTab === 'verifiable-audit' && <VerifiableAuditPanel />}
               {dashboardTab === 'emergency' && <EmergencyPanel />}
               {dashboardTab === 'copilot' && <CopilotPanel />}
               {dashboardTab === 'security' && <SecurityPanel />}

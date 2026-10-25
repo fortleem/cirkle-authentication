@@ -114,13 +114,30 @@ export async function recordAudit(params: {
   metadata?: Record<string, unknown> | null
 }) {
   try {
+    // Merkle chain: get the previous event's hash
+    const lastEvent = await db.auditLog.findFirst({
+      where: params.userId ? { userId: params.userId } : undefined,
+      orderBy: { createdAt: 'desc' },
+      select: { eventHash: true },
+    })
+    const prevHash = lastEvent?.eventHash ?? '0'.repeat(64) // genesis hash
+    const metadataStr = params.metadata ? JSON.stringify(params.metadata) : ''
+    const timestamp = Date.now().toString()
+    // Compute eventHash = SHA-256(prevHash + action + metadataStr + timestamp)
+    const { createHash } = await import('crypto')
+    const eventHash = createHash('sha256')
+      .update(prevHash + '|' + params.action + '|' + metadataStr + '|' + timestamp)
+      .digest('hex')
+
     await db.auditLog.create({
       data: {
         userId: params.userId ?? null,
         action: params.action,
         ip: params.ip ?? null,
         userAgent: params.userAgent ?? null,
-        metadata: params.metadata ? JSON.stringify(params.metadata) : null,
+        metadata: metadataStr || null,
+        prevHash,
+        eventHash,
       },
     })
   } catch (e) {

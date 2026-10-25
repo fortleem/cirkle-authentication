@@ -199,6 +199,8 @@ model AuditLog {
   ip         String?
   userAgent  String?
   metadata   String?
+  prevHash   String?  // hash of the previous event (Merkle chain)
+  eventHash  String?  // SHA-256(prevHash + action + metadata + timestamp)
   createdAt  DateTime @default(now())
   user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

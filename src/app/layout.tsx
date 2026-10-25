@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ServiceWorkerRegistrar } from "@/components/cirkle/sw-registrar";
 import { QueryProvider } from "@/providers/query-provider";
 import { AdaptiveThemeProvider } from "@/providers/adaptive-theme-provider";
+import { CBAProvider } from "@/providers/cba-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -70,7 +71,9 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <AdaptiveThemeProvider>
-              {children}
+              <CBAProvider>
+                {children}
+              </CBAProvider>
               <ServiceWorkerRegistrar />
               <Toaster richColors position="top-center" />
             </AdaptiveThemeProvider>
