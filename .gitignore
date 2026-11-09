@@ -54,3 +54,6 @@ server.log
 /skills/
 # local tool artifacts
 tool-results/
+
+# local backups (snapshots live on disk + downloadable via Database tab)
+backups/
