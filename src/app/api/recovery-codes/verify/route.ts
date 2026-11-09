@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid input' }, { status: 400 })
   }
   const { identifier, code } = parsed.data
-  const normalized = identifier.toLowerCase().trim()
+  // Accept the "@username" handle form (strip leading @) — real emails keep their @.
+  const normalized = identifier.toLowerCase().trim().replace(/^@/, '')
   const isEmail = normalized.includes('@')
 
   const user = await db.user.findFirst({ where: isEmail ? { email: normalized } : { username: normalized } })

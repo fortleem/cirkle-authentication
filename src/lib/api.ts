@@ -351,7 +351,7 @@ export const api = {
     const res = await fetch('/api/recovery/setup', { cache: 'no-store' })
     return parseResponse(res)
   },
-  async setupRecovery(guardians: { label: string; handle: string }[], threshold: number): Promise<{ ok: boolean; total: number; threshold: number; secretHash: string; guardians: { id: string; label: string; handle: string; share: string }[] }> {
+  async setupRecovery(guardians: { label: string; handle: string }[], threshold: number): Promise<{ ok: boolean; total: number; threshold: number; secretHash: string; guardians: { id: string; label: string; handle: string; share: string; threshold: number; total: number; createdAt: string }[] }> {
     const res = await fetch('/api/recovery/setup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

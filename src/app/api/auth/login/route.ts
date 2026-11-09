@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: firstError }, { status: 400 })
     }
     const { identifier, password } = parsed.data
-    const normalized = identifier.toLowerCase().trim()
+    // The Cirkle handle is "@username" — strip a leading @ so the handle form
+    // is recognized as a username lookup, while real emails (name@domain)
+    // still contain @ afterwards and route to the email lookup.
+    const normalized = identifier.toLowerCase().trim().replace(/^@/, '')
     const isEmail = normalized.includes('@')
 
     const user = await db.user.findFirst({

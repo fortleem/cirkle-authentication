@@ -45,8 +45,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
-import { api, type Business } from '@/lib/api'
-import { useAuthStore } from '@/stores/auth-store'
+import { api } from '@/lib/api'
+import { useAuthStore, type Business } from '@/stores/auth-store'
 
 const TYPE_LABELS: Record<string, string> = {
   sole: 'Sole proprietor',

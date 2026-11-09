@@ -87,5 +87,4 @@ const distillBrainQuery = inngest.createFunction(
 export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [welcomeUser, distillAuthorization, distillBrainQuery],
-  signingKey: process.env.INNGEST_SIGNING_KEY,
 })

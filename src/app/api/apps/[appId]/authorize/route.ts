@@ -133,7 +133,6 @@ export async function POST(
     create: { userId: user.id, appId, scopes, grantedAt: new Date(), contextType, businessId, expiresAt },
   })
 
-  const ip = getClientIp(req)
   const ua = getUserAgent(req)
   await recordAudit({
     userId: user.id,

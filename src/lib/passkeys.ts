@@ -90,14 +90,16 @@ export async function finishPasskeyRegistration(
   const { registrationInfo } = verification
   if (!registrationInfo) return { ok: false, error: 'No registration info' }
 
+  // simplewebauthn v14: the credential is exposed as registrationInfo.credential
+  // (WebAuthnCredential { id, publicKey, counter, transports })
   await db.passkey.create({
     data: {
       userId,
-      credentialId: registrationInfo.credentialID,
-      publicKey: Buffer.from(registrationInfo.credentialPublicKey).toString('base64'),
-      counter: registrationInfo.credentialCounter,
+      credentialId: registrationInfo.credential.id,
+      publicKey: Buffer.from(registrationInfo.credential.publicKey).toString('base64'),
+      counter: registrationInfo.credential.counter,
       deviceType: registrationInfo.credentialDeviceType,
-      transports: registrationInfo.credentialDeviceType,
+      transports: registrationInfo.credential.transports?.join(',') ?? '',
       name: deviceName || `Passkey ${new Date().toLocaleDateString()}`,
     },
   })
@@ -126,16 +128,18 @@ export async function finishPasskeyAuthentication(
 
   let verification: VerifiedAuthenticationResponse
   try {
+    // simplewebauthn v14: pass the stored credential directly instead of the
+    // legacy `authenticator` object.
     verification = await verifyAuthenticationResponse({
       response: credential,
       expectedChallenge,
       expectedOrigin: origin,
       expectedRPID: RP_ID,
-      authenticator: {
-        credentialID: passkey.credentialId,
-        credentialPublicKey: new Uint8Array(Buffer.from(passkey.publicKey, 'base64')),
+      credential: {
+        id: passkey.credentialId,
+        publicKey: new Uint8Array(Buffer.from(passkey.publicKey, 'base64')),
         counter: passkey.counter,
-        transports: passkey.transports?.split(',') as any,
+        transports: passkey.transports?.split(',') ?? undefined,
       },
     })
   } catch (e) {

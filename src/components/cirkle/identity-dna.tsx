@@ -119,7 +119,7 @@ function computeRings(seed: string): Ring[] {
     const nodeCount = 4 + Math.floor(stream[si++ % stream.length] * 9) // 4–12 nodes
     const baseAngle = stream[si++ % stream.length] * Math.PI * 2
     const twist = (stream[si++ % stream.length] - 0.5) * 0.6 // ring rotation offset
-    const nodes = []
+    const nodes: Ring['nodes'] = []
     for (let ni = 0; ni < nodeCount; ni++) {
       const angle = baseAngle + twist + (ni / nodeCount) * Math.PI * 2
       const size = 0.8 + stream[si++ % stream.length] * 2.2

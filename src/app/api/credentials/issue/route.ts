@@ -35,6 +35,9 @@ export async function POST(req: NextRequest) {
 
   // Check the attribute is actually verified
   const dbUser = await db.user.findUnique({ where: { id: user.id }, select: { emailVerified: true, kycVerified: true, businessVerified: true, phoneVerified: true, twoFactorEnabled: true, pqAttestationPubKey: true, pqAttestationSig: true, pqAttestationMsg: true } })
+  if (!dbUser) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  }
   if (!def.check(dbUser)) {
     return NextResponse.json({ error: `Attribute "${def.attribute}" is not verified — complete verification first` }, { status: 422 })
   }

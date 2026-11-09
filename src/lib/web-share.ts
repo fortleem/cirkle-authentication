@@ -27,8 +27,9 @@ export function useWebShare() {
         return 'shared'
       }
 
-      // Standard share (text + URL)
-      if ('share' in navigator) {
+      // Standard share (text + URL) — check via typeof to avoid over-narrowing
+      // the Navigator type with the `in` operator.
+      if (typeof navigator.share === 'function') {
         await navigator.share(data)
         return 'shared'
       }

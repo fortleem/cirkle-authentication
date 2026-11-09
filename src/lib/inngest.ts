@@ -9,6 +9,9 @@ export const inngest = new Inngest({
   id: 'cirkle-authentication',
   name: 'Cirkle Authentication',
   eventKey: process.env.INNGEST_EVENT_KEY || 'dev-local-cirkle-auth-event-key',
+  // v4: the signing key authenticates Inngest's callbacks to /api/inngest.
+  // Falls back to the INNGEST_SIGNING_KEY env var automatically.
+  signingKey: process.env.INNGEST_SIGNING_KEY,
 })
 
 // Event names

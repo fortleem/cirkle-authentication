@@ -87,15 +87,17 @@ export async function runConsensus(
   // Replace the synthesizer's round-1 entry with the round-2 synthesis in the
   // returned providers list? No — keep round-1 answers for transparency, but
   // surface the synthesis as the consensus.
-  const consensus = synthResult.ok && synthResult.answer
-    ? synthResult.answer
-    : // Synthesis failed — fall back to the first successful answer
-      successful[0].answer
+  const synthAnswer = synthResult.ok ? synthResult.answer : null
+  const consensus = synthAnswer ?? successful[0].answer
 
   return {
     prompt,
     consensus,
-    consensusModel: `${synthProvider.name} · ${synthProvider.model}`,
+    // Attribute the consensus to the provider/model that actually produced it
+    // (the synthesizer, or the fallback first responder if synthesis failed).
+    consensusModel: synthAnswer !== null
+      ? `${synthResult.name} · ${synthResult.model}`
+      : `${successful[0].name} · ${successful[0].model}`,
     agreed: synthResult.ok,
     providers: results,
     successCount,

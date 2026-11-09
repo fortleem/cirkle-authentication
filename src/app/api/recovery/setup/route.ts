@@ -56,7 +56,15 @@ export async function POST(req: NextRequest) {
   )
 
   // The shares are shown ONCE (like recovery codes) — we return them for the user to distribute
-  const sharesOnce = guardianRows.map((g, i) => ({ id: g.id, label: g.label, handle: g.handle, share: split.shares[i] }))
+  const sharesOnce = guardianRows.map((g, i) => ({
+    id: g.id,
+    label: g.label,
+    handle: g.handle,
+    share: split.shares[i],
+    threshold: g.threshold,
+    total: g.total,
+    createdAt: g.createdAt.toISOString(),
+  }))
 
   const ip = getClientIp(req)
   const ua = getUserAgent(req)

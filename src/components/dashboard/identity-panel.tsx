@@ -63,6 +63,7 @@ export function IdentityPanel() {
   const postureScore = Math.round((completed / steps.length) * 100)
 
   async function verifyPhone() {
+    if (!user) return
     if (!phoneInput.trim() || phoneInput.trim().length < 7) {
       toast.error('Enter a valid phone number')
       return
@@ -94,6 +95,7 @@ export function IdentityPanel() {
   }
 
   async function completeKyc() {
+    if (!user) return
     setKycStage('completing')
     try {
       await api.completeKyc()
