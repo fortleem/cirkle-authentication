@@ -150,7 +150,7 @@ function TimelineNode({ entry, index }: { entry: AuditEntry; index: number }) {
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.6) }}
-      className="relative mb-3 pl-10"
+      className="timeline-reveal relative mb-3 pl-10"
     >
       {/* Node */}
       <div className={`absolute left-0 top-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-background ${color} ${isMilestone ? 'ring-2 ring-primary/30' : ''}`}>

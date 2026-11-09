@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ServiceWorkerRegistrar } from "@/components/cirkle/sw-registrar";
+import { SpeculationRules } from "@/components/cirkle/speculation-rules";
 import { QueryProvider } from "@/providers/query-provider";
 import { AdaptiveThemeProvider } from "@/providers/adaptive-theme-provider";
 import { CBAProvider } from "@/providers/cba-provider";
@@ -75,6 +76,7 @@ export default function RootLayout({
                 {children}
               </CBAProvider>
               <ServiceWorkerRegistrar />
+              <SpeculationRules />
               <Toaster richColors position="top-center" />
             </AdaptiveThemeProvider>
           </QueryProvider>

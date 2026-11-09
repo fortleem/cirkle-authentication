@@ -7,6 +7,7 @@ import {
   XCircle,
   Copy,
   Download,
+  Share2,
   Sparkles,
   ShieldCheck,
   Fingerprint,
@@ -17,6 +18,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { useWebShare } from '@/lib/web-share'
 import { useAuthStore } from '@/stores/auth-store'
 import { IdentityDNA } from '@/components/cirkle/identity-dna'
 import { CirkleMark } from '@/components/cirkle/logo'
@@ -27,6 +29,7 @@ export function IdentityCardPanel() {
   const user = useAuthStore((s) => s.user)
   const stats = useAuthStore((s) => s.stats)
   const [pq, setPq] = useState<PQVerifyResult | null>(null)
+  const { isSupported: shareSupportedFn, share } = useWebShare()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -47,6 +50,18 @@ export function IdentityCardPanel() {
   ]
   const completed = verifications.filter((v) => v.met).length
   const tier = completed >= 8 ? 'Maximum' : completed >= 5 ? 'Enhanced' : completed >= 2 ? 'Basic' : 'Unverified'
+
+  async function shareCard() {
+    if (!user) return
+    const result = await share({
+      title: `Cirkle Identity — @${user.username}`,
+      text: `${user!.name} (@${user!.username}) — ${tier} tier, ${completed}/${verifications.length} verified${pq?.hasAttestation && pq?.valid ? ', PQ-attested ✓' : ''}.`,
+      url: typeof window !== 'undefined' ? window.location.origin : undefined,
+    })
+    if (result === 'shared') toast.success('Identity card shared')
+    else if (result === 'copied') toast.success('Copied to clipboard')
+    else if (result === 'failed') toast.error('Share failed')
+  }
 
   function copySummary() {
     const summary = `Cirkle Identity Card
@@ -140,6 +155,11 @@ Member since: ${formatDate(user!.createdAt)}
         <Button variant="outline" size="sm" onClick={copySummary} className="gap-1.5">
           <Copy className="h-3.5 w-3.5" /> Copy summary
         </Button>
+        {shareSupportedFn() && (
+          <Button variant="outline" size="sm" onClick={shareCard} className="gap-1.5">
+            <Share2 className="h-3.5 w-3.5" /> Share
+          </Button>
+        )}
       </div>
 
       {/* Verification details */}

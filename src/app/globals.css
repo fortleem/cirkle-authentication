@@ -451,3 +451,67 @@ html.risk-locked .orbit-ring {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Container Queries (2026) — cards adapt to their CONTAINER size, not the viewport ── */
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* When the container is narrow (< 300px), stack the card content */
+@container card (max-width: 300px) {
+  .card-responsive {
+    flex-direction: column;
+  }
+  .card-responsive > * {
+    width: 100% !important;
+  }
+}
+
+/* When the container is wide (> 500px), show more detail */
+@container card (min-width: 500px) {
+  .card-detail {
+    display: block;
+  }
+}
+
+/* ── CSS Scroll-Driven Animations (2026) — timeline reveals on scroll ── */
+/* Timeline nodes animate in as the user scrolls (no JS needed) */
+.timeline-reveal {
+  animation: timeline-reveal linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}
+@keyframes timeline-reveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Progressive enhancement: only apply if scroll-timeline is supported */
+@supports (animation-timeline: view()) {
+  .timeline-scroll-spine {
+    animation: spine-grow linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% cover 50%;
+  }
+}
+@keyframes spine-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* ── :has() selector (2026) — parent responds to child state ── */
+/* Highlight a card when it contains a connected badge */
+.orbit-ring:has(.bg-primary\/5) {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* ── CSS Nesting (2026) — now natively supported ── */
+.launchpad-card {
+  & .app-chip {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &:hover .app-chip {
+    transform: scale(1.05);
+  }
+}
